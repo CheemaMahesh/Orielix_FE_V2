@@ -45,7 +45,7 @@ export const JoinEvent = ({ open, setOpen, eventName, eventId }: JoinEventProps)
                     </Dialog.Description>
 
                     <div className='flex items-center justify-end gap-3 mt-4 border-t pt-4'>
-                        <Button variant="destructive" onClick={() => setOpen(false)}>Cancel</Button>
+                        <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
                         <Button
                             onClick={handleJoinEvent}
                             isLoading={isLoading.joinevent}

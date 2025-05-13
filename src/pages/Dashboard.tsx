@@ -25,7 +25,7 @@ import {
   Users,
   X as XIcon
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { EventDetails } from "@/components/Modals/EventDetails";
@@ -33,6 +33,7 @@ import { RegisterEvent } from "@/components/Modals/RegisterEvent";
 import { ShowEventSuccess } from "@/components/Modals/ShowEventSuccessModal";
 import { Session } from "@/components/Skeliton/Session";
 import { useFunctionDirectory } from "@/hooks/FucntionDirectory";
+import { SessionType } from "@/reducers/sessions";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -81,15 +82,17 @@ export default function Dashboard() {
   const [today] = useState(new Date());
   // --------------------------------------
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
-  const { email, id, userType, firstName, auraPoints, username } = userInfo || {};
+  const { firstName, auraPoints, username } = userInfo || {};
   const [eventModalOpen, setEventModalOpen] = useState<boolean>(false);
   const [leaveEventModalOpen, setLeaveEventModalOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventType>(null);
+  const [selectedSession, setSelectedSession] = useState<SessionType>(null);
 
   // --------------------------------
-  const { isLoading } = useProfile();
   const [openEventDetails, setOpenEventDetails] = useState<boolean>(false);
   const [showEventSuccess, setShowEventSuccess] = useState<boolean>(false);
+  const [openSessionDetails, setOpenSessionDetails] = useState<boolean>(false);
+  const [showSessionSuccess, setShowSessionSuccess] = useState<boolean>(false);
   const { events, loading: isEventLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: isSessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
 
@@ -378,14 +381,23 @@ export default function Dashboard() {
 
   // --------------------------------------
 
-  const handleOpenEventModal = ({ event, type }: { event: EventType, type: string }) => {
+  const handleOpenEventModal = useCallback(({ event, type }: { event: EventType, type: string }) => {
     setSelectedEvent(event);
     if (type === "leave") {
       setLeaveEventModalOpen(true);
     } else {
       setEventModalOpen(true);
     }
-  }
+  }, []);
+
+  const handleOpenSessionModal = useCallback(({ session, type }: { session: SessionType, type: string }) => {
+    setSelectedSession(session);
+    if (type === "leave") {
+      // setLeaveEventModalOpen(true);
+    } else {
+      setOpenSessionDetails(true);
+    }
+  }, []);
   const { getHoursByMinutes } = useFunctionDirectory();
 
 
@@ -572,7 +584,7 @@ export default function Dashboard() {
                   {/* Welcome Section */}
                   <div className="pt-8 px-8 text-center">
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                      Welcome {username || 'User'}
+                      Welcome {username || firstName || 'User'}
                     </h2>
 
                     {/* Points Box */}
@@ -1134,19 +1146,19 @@ export default function Dashboard() {
 
                         {/* Action buttons */}
                         <div className="flex gap-2 mt-4">
-                          <Button
+                          {!event.joined && <Button
                             onClick={() => { handleOpenEventModal({ event: event, type: event.joined ? "leave" : "join" }) }}
                             className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                           >
                             {event.joined ? "Leave" : "Register"}
-                          </Button>
+                          </Button>}
                           <Button
                             variant="outline"
                             onClick={() => {
                               setSelectedEvent(event);
                               setOpenEventDetails(true);
                             }}
-                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03] ${event.joined ? "full" : "auto"} sm:w-auto`}
                           >
                             View Details
                           </Button>
@@ -1165,7 +1177,6 @@ export default function Dashboard() {
             </>
           </div>
 
-          {/* Featured Sessions - Full Width Section */}
           <div className="mt-8 sm:mt-16 mb-8 sm:mb-12">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Upcoming Sessions</h2>
@@ -1235,14 +1246,19 @@ export default function Dashboard() {
                         </div>
 
                         <div className="flex gap-2 mt-4">
-                          <Button
+                          {!session.joined && <Button
+                            onClick={() => { handleOpenSessionModal({ session, type: session.joined ? "leave" : "join" }) }}
                             className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                           >
-                            {session.status === 'live' ? 'Join Now' : 'Register'}
-                          </Button>
+                            {'Register'}
+                          </Button>}
                           <Button
                             variant="outline"
-                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                            onClick={() => {
+                              setSelectedSession(session);
+                              setOpenSessionDetails(true);
+                            }}
+                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03] w-${session.joined ? "full" : "auto"} sm:w-auto`}
                           >
                             View Details
                           </Button>

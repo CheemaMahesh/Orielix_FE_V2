@@ -43,7 +43,8 @@ export const LeaveEvent = ({ open, onOpenChange, event }: JoinEventProps) => {
                     </Dialog.Description>
 
                     <div className='flex items-center justify-end gap-3 mt-4 border-t pt-4'>
-                        <Button variant="destructive" onClick={() => onOpenChange(false)}>Cancel</Button>
+                        <Button variant='ghost'
+                            className='border border-gray-300 border-solid hover:border-0' onClick={() => onOpenChange(false)}>Cancel</Button>
                         <Button
                             onClick={handleJoinEvent}
                             isLoading={isLoading.leaveEvent}

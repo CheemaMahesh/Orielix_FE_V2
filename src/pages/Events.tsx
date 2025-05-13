@@ -520,12 +520,12 @@ export default function Events() {
 
                         <div className="flex flex-col sm:flex-row gap-3 mt-5 relative z-10">
 
-                          <Button
+                          {!event.joined && <Button
                             onClick={() => { handleOpenEventModal({ event: event, type: event.joined ? "leave" : "join" }) }}
-                            className={`flex-1 bg-gradient-to-r from-purple-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                            className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                           >
                             {event.joined ? "Leave" : "Register"}
-                          </Button>
+                          </Button>}
 
                           <Button
                             onClick={() => {
@@ -534,7 +534,7 @@ export default function Events() {
                               setIsDetailsOpen(true);
                             }}
                             variant="outline"
-                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                            className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03] w-${event.joined ? "full" : "auto"} sm:w-auto`}
                           >
                             View Details
                           </Button>

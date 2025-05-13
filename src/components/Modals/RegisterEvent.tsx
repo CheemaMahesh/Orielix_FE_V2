@@ -16,9 +16,10 @@ export type RegisterEventProps = {
     onOpenChange: (open: boolean) => void;
     event: EventType;
     onSuccess?: () => void;
+    isEvent?: boolean;
 };
 
-export const RegisterEvent = ({ open, onOpenChange, event, onSuccess }: RegisterEventProps) => {
+export const RegisterEvent = ({ open, onOpenChange, event, onSuccess, isEvent = true }: RegisterEventProps) => {
     const { joinEvent, isLoading } = useProfile();
     const { getAllEventsByToken } = useCallProfileInfo();
 
@@ -56,7 +57,7 @@ export const RegisterEvent = ({ open, onOpenChange, event, onSuccess }: Register
                     <div className="p-6 pt-5 relative z-10">
                         <div className="mb-4">
                             <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                Register for Event
+                                Register for {isEvent ? "Event" : "Session"}
                             </DialogTitle>
                             <DialogDescription className="text-center mt-2">
                                 You're registering for <span className="font-semibold text-gray-800">{event.eventName}</span> on {dayjs(event.eventDate).format("MMM DD, YYYY")}.
@@ -93,12 +94,14 @@ export const RegisterEvent = ({ open, onOpenChange, event, onSuccess }: Register
 
                         <div className='flex items-center justify-end gap-3 pt-4'>
                             <Button
-                                className={`bg-gradient-to-r from-red-600 to-indigo-600 hover:from-red-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                                variant='ghost'
+                                className='border border-gray-300 border-solid hover:border-0'
                                 onClick={() => onOpenChange(false)}>Cancel</Button>
+
                             <Button
                                 onClick={handleJoinEvent}
                                 isLoading={isLoading.joinevent}
-                                className={`bg-gradient-to-r from-purple-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                                className={`bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                             >
                                 Register
                             </Button></div>
