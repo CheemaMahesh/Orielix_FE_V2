@@ -10,6 +10,8 @@ type ProfileLoading = {
   event: boolean;
   leaveEvent: boolean;
   session: boolean;
+  joinsession: boolean;
+  intrest: boolean;
 };
 
 export type MeResponse = {
@@ -33,6 +35,8 @@ export const useProfile = () => {
     event: false,
     leaveEvent: false,
     session: false,
+    joinsession: false,
+    intrest: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     console.log("Loading state changed:", type, value);
@@ -133,16 +137,17 @@ export const useProfile = () => {
           },
         }
       );
-      handleLoading("session", false);
       return response.data;
     } catch (err) {
-      handleLoading("session", false);
       console.log("Error during getAllSessions:", err);
+    } finally {
+      handleLoading("getallsessions", false);
     }
   };
 
   const joinSession = async (id: string) => {
     try {
+      handleLoading("joinsession", true);
       const response = await axios.post(
         `${config.apiUrl}/api/v1/user/join/session/${id}`,
         {},
@@ -155,6 +160,27 @@ export const useProfile = () => {
       return response.data;
     } catch (err) {
       console.log("Error during joinSession:", err);
+    } finally {
+      handleLoading("joinsession", false);
+    }
+  };
+
+  const getAllIntrests = async () => {
+    try {
+      handleLoading("intrest", true);
+      const response = await axios.get(
+        `${config.apiUrl}/api/v1/user/getallintrest`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during getAllIntrests:", err);
+    } finally {
+      handleLoading("intrest", false);
     }
   };
 
@@ -166,5 +192,6 @@ export const useProfile = () => {
     leaveEvent,
     getAllSessions,
     joinSession,
+    getAllIntrests,
   };
 };

@@ -24,6 +24,7 @@ import Session from "./pages/Session";
 import Sessions from "./pages/Sessions";
 import UserProfile from "./pages/UserProfile";
 import { RootState } from "./store";
+import { Admin } from "./pages/Admin/Admin";
 
 const queryClient = new QueryClient();
 
@@ -32,12 +33,15 @@ const App = () => {
   const { events, loading: eventsLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: sessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
 
+  const token = localStorage.getItem("token");
 
   const { getMeByToken, getAllEventsByToken, getAllSessionsByToken } = useCallProfileInfo();
-  const { id, } = userInfo || {};
+  const { id, userType } = userInfo || {};
   const { isLoading } = useProfile();
 
   const isAuthenticated = !!localStorage.getItem('token');
+
+  const isAdmin = userType === "admin" || userType === "superadmin";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,18 +62,16 @@ const App = () => {
 
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
     if (!isLoading.me && token && !id) {
       getMeByToken();
     }
-    if (!eventsLoading && (!events || events.length === 0)) {
+    if (!eventsLoading && (!events || events.length === 0) && token) {
       getAllEventsByToken();
     }
-    if (!sessionLoading && (!sessions || sessions.length === 0)) {
+    if (!sessionLoading && (!sessions || sessions.length === 0) && token) {
       getAllSessionsByToken();
     }
-  }, [id, isLoading.me]);
+  }, [id, isLoading.me, token]);
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -94,6 +96,7 @@ const App = () => {
                 <Route path="/community" element={<Community />} />
                 <Route path="/user-profile" element={<UserProfile />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/admin" element={<Admin />} />
               </Route>
 
               {/* Publicly Accessible Routes */}

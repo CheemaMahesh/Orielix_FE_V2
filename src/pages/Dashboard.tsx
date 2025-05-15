@@ -1,13 +1,15 @@
-import { useProfile } from "@/Api/Profile";
-import { JoinEvent } from "@/components/Modals/JoinEvent";
+import { EventDetails } from "@/components/Modals/EventDetails";
 import { LeaveEvent } from "@/components/Modals/LeaveEvent";
+import { RegisterEvent } from "@/components/Modals/RegisterEvent";
+import { ShowEventSuccess } from "@/components/Modals/ShowEventSuccessModal";
+import { Session } from "@/components/Skeliton/Session";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { sessionData } from "@/data/sessionData";
-import { useToast } from "@/hooks/use-toast";
+import { useFunctionDirectory } from "@/hooks/FucntionDirectory";
 import { EventType } from "@/reducers/events";
+import { SessionType } from "@/reducers/sessions";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
 import {
@@ -26,14 +28,11 @@ import {
   X as XIcon
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { EventDetails } from "@/components/Modals/EventDetails";
-import { RegisterEvent } from "@/components/Modals/RegisterEvent";
-import { ShowEventSuccess } from "@/components/Modals/ShowEventSuccessModal";
-import { Session } from "@/components/Skeliton/Session";
-import { useFunctionDirectory } from "@/hooks/FucntionDirectory";
-import { SessionType } from "@/reducers/sessions";
+import { SessionDetails } from "@/components/Modals/SessionDetails";
+import { RegisterSession } from "@/components/Modals/RegisterSession";
+import { ShowSessionSuccess } from "@/components/Modals/ShowSessionSuccess";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -93,6 +92,7 @@ export default function Dashboard() {
   const [showEventSuccess, setShowEventSuccess] = useState<boolean>(false);
   const [openSessionDetails, setOpenSessionDetails] = useState<boolean>(false);
   const [showSessionSuccess, setShowSessionSuccess] = useState<boolean>(false);
+  const [openSessionRegister, setOpenSessionRegister] = useState<boolean>(false);
   const { events, loading: isEventLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: isSessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
 
@@ -395,10 +395,11 @@ export default function Dashboard() {
     if (type === "leave") {
       // setLeaveEventModalOpen(true);
     } else {
-      setOpenSessionDetails(true);
+      setOpenSessionRegister(true);
     }
   }, []);
   const { getHoursByMinutes } = useFunctionDirectory();
+  const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
 
 
   return (
@@ -453,6 +454,11 @@ export default function Dashboard() {
                 window.scrollTo(0, 0);
                 setSidebarOpen(false);
               }} />
+              <NavItem icon={<Users className="h-5 w-5" />} text="Admin tool" onClick={() => {
+                navigate('/admin');
+                window.scrollTo(0, 0);
+                setSidebarOpen(false);
+              }} />
               <NavItem icon={<User className="h-5 w-5" />} text="Profile" onClick={() => {
                 navigate('/user-profile');
                 window.scrollTo(0, 0);
@@ -504,6 +510,9 @@ export default function Dashboard() {
                   <button onClick={() => navigate('/community')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
                     Community
                   </button>
+                  {isAdmin && <button onClick={() => navigate('/admin')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
+                    Admin
+                  </button>}
                 </div>
               </div>
             </div>
@@ -1094,8 +1103,8 @@ export default function Dashboard() {
 
             <>
               {isEventLoading ? (<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                {Array(3).fill(null)?.map(() => (
-                  <Session />
+                {Array(3).fill(null)?.map((_, index) => (
+                  <Session key={index} />
                 ))}
               </div>) :
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
@@ -1247,7 +1256,7 @@ export default function Dashboard() {
 
                         <div className="flex gap-2 mt-4">
                           {!session.joined && <Button
-                            onClick={() => { handleOpenSessionModal({ session, type: session.joined ? "leave" : "join" }) }}
+                            onClick={() => { handleOpenSessionModal({ session, type: "join" }) }}
                             className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                           >
                             {'Register'}
@@ -1266,6 +1275,9 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   ))}
+                  {openSessionRegister && <RegisterSession open={openSessionRegister} onOpenChange={setOpenSessionRegister} session={selectedSession} onSuccess={() => setShowSessionSuccess(true)} />}
+                  {openSessionDetails && <SessionDetails open={openSessionDetails} onOpenChange={setOpenSessionDetails} session={selectedSession} onRegister={() => { setOpenSessionRegister(true); setOpenSessionDetails(false); }} />}
+                  {showSessionSuccess && <ShowSessionSuccess open={showSessionSuccess} onOpenChange={setShowSessionSuccess} session={selectedSession} />}
                 </div>}
             </>
           </div>

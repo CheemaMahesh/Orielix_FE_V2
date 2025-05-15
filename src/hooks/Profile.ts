@@ -16,16 +16,8 @@ export const useCallProfileInfo = () => {
       if (res.success) {
         dispatch(addEvents(res.events));
       }
-      dispatch(setEventLoading(false));
-    } else {
-      dispatch(setEventLoading(false));
-      toast({
-        title: "Error",
-        description:
-          "An error occurred while fetching events. Please try again.",
-        variant: "destructive",
-      });
     }
+    dispatch(setEventLoading(false));
   };
 
   const getMeByToken = async () => {
@@ -35,11 +27,7 @@ export const useCallProfileInfo = () => {
         dispatch(addUser({ user: res.user }));
       }
     } else {
-      toast({
-        title: "Error",
-        description: "An error occurred while registering. Please try again.",
-        variant: "destructive",
-      });
+      console.log("Error fetching user data");
     }
   };
 
@@ -50,16 +38,8 @@ export const useCallProfileInfo = () => {
       if (res.success) {
         dispatch(addSessions(res.sessions));
       }
-      dispatch(setSessionLoading(false));
-    } else {
-      dispatch(setSessionLoading(false));
-      toast({
-        title: "Error",
-        description:
-          "An error occurred while fetching sessions. Please try again.",
-        variant: "destructive",
-      });
     }
+    dispatch(setSessionLoading(false));
   };
   return {
     getAllEventsByToken,

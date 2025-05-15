@@ -20,15 +20,15 @@ export type RegisterEventProps = {
 };
 
 export const RegisterSession = ({ open, onOpenChange, session, onSuccess }: RegisterEventProps) => {
-    const { joinEvent, isLoading } = useProfile();
-    const { getAllEventsByToken } = useCallProfileInfo();
+    const { joinSession, isLoading } = useProfile();
+    const { getAllSessionsByToken } = useCallProfileInfo();
 
-    const handleJoinEvent = async () => {
+    const handleJoinSession = async () => {
         try {
-            const res = await joinEvent(session?.id);
+            const res = await joinSession(session?.id);
             if (res?.success) {
                 onOpenChange(false);
-                getAllEventsByToken();
+                getAllSessionsByToken();
                 onSuccess();
             }
         } catch (err) {
@@ -99,8 +99,8 @@ export const RegisterSession = ({ open, onOpenChange, session, onSuccess }: Regi
                                 onClick={() => onOpenChange(false)}>Cancel</Button>
 
                             <Button
-                                onClick={handleJoinEvent}
-                                isLoading={isLoading.joinevent}
+                                onClick={handleJoinSession}
+                                isLoading={isLoading.joinsession}
                                 className={`bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                             >
                                 Register

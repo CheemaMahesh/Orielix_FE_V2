@@ -1,12 +1,14 @@
+import { RegisterSession } from "@/components/Modals/RegisterSession";
+import { SessionDetails } from "@/components/Modals/SessionDetails";
+import { ShowSessionSuccess } from "@/components/Modals/ShowSessionSuccess";
 import { Session } from "@/components/Skeliton/Session";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { sessionData } from "@/data/sessionData";
 import { useFunctionDirectory } from "@/hooks/FucntionDirectory";
-import { useCallProfileInfo } from "@/hooks/Profile";
+import { SessionType } from "@/reducers/sessions";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
 import {
@@ -91,7 +93,11 @@ export default function Sessions() {
       };
     }
   }, [lastScrollY]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [openSessionRegister, setOpenSessionRegister] = useState<boolean>(false);
+  const [openSessionDetails, setOpenSessionDetails] = useState<boolean>(false);
+  const [showSessionSuccess, setShowSessionSuccess] = useState<boolean>(false);
+  const [selectedSession, setSelectedSession] = useState<SessionType>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -530,14 +536,22 @@ export default function Sessions() {
 
                           {/* Action buttons */}
                           <div className="flex gap-2 mt-4">
-                            <Button
+                            {!session?.joined && <Button
+                              onClick={() => {
+                                setSelectedSession(session);
+                                setOpenSessionRegister(true);
+                              }}
                               className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-500 ease-in-out hover:scale-[1.03]`}
                             >
-                              {session.status === 'live' ? 'Join Now' : 'Register'}
-                            </Button>
+                              Register
+                            </Button>}
                             <Button
                               variant="outline"
-                              className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03]`}
+                              onClick={() => {
+                                setSelectedSession(session);
+                                setOpenSessionDetails(true);
+                              }}
+                              className={`flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-500 ease-in-out hover:scale-[1.03] ${session?.joined ? 'w-full' : 'w-auto'}`}
                             >
                               View Details
                             </Button>
@@ -545,6 +559,10 @@ export default function Sessions() {
                         </CardContent>
                       </Card>
                     ))}
+                    {openSessionRegister && <RegisterSession open={openSessionRegister} onOpenChange={setOpenSessionRegister} session={selectedSession} onSuccess={() => setShowSessionSuccess(true)} />}
+                    {openSessionDetails && <SessionDetails open={openSessionDetails} onOpenChange={setOpenSessionDetails} session={selectedSession} onRegister={() => { setOpenSessionRegister(true); setOpenSessionDetails(false); }} />}
+                    {showSessionSuccess && <ShowSessionSuccess open={showSessionSuccess} onOpenChange={setShowSessionSuccess} session={selectedSession} />}
+
                   </div>}
               </>
             </div>

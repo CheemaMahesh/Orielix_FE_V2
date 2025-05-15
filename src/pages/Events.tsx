@@ -88,7 +88,6 @@ export default function Events() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const events = useSelector((state: RootState) => state.eventSlice.events);
   const [registerEventModal, setRegisteredEventModal] = useState<boolean>(false);
