@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { config } from "../Hooks";
 
 export type AddIntrest = {
@@ -5,11 +6,26 @@ export type AddIntrest = {
   description: string;
 };
 
+type Loading = {
+  intrest: boolean;
+};
+
 export const useAdminIntrests = () => {
   const baseUrl = config.apiUrl;
   const token = localStorage.getItem("token");
+  const [isLoading, setLoading] = useState<Loading>({
+    intrest: false,
+  });
+  const updateLoading = (type: string, value: boolean) => {
+    setLoading((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
+
   const createIntrest = async ({ name, description }: AddIntrest) => {
     try {
+      updateLoading("intrest", true);
       const response = await fetch(
         `${baseUrl}/api/v1/preferences/intrest/create`,
         {
@@ -34,8 +50,10 @@ export const useAdminIntrests = () => {
     } catch (error) {
       console.error("Error creating intrest:", error);
       throw error;
+    } finally {
+      updateLoading("intrest", false);
     }
   };
 
-  return { createIntrest };
+  return { createIntrest, isLoading };
 };

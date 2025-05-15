@@ -12,6 +12,7 @@ type ProfileLoading = {
   session: boolean;
   joinsession: boolean;
   intrest: boolean;
+  role: boolean;
 };
 
 export type MeResponse = {
@@ -37,6 +38,7 @@ export const useProfile = () => {
     session: false,
     joinsession: false,
     intrest: false,
+    role: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     console.log("Loading state changed:", type, value);
@@ -184,6 +186,25 @@ export const useProfile = () => {
     }
   };
 
+  const getAllRoles = async () => {
+    try {
+      handleLoading("role", true);
+      const response = await axios.get(
+        `${config.apiUrl}/api/v1/user/getallroles`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during getAllRoles:", err);
+    } finally {
+      handleLoading("role", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -193,5 +214,6 @@ export const useProfile = () => {
     getAllSessions,
     joinSession,
     getAllIntrests,
+    getAllRoles,
   };
 };

@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import userSlice from "../reducers/me";
 import eventSlice from "../reducers/events";
 import sessionsSlice from "../reducers/sessions";
+import intrestSlice from "../reducers/Intrests";
 
 // You'll add reducers here later
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
     userSlice,
     eventSlice,
     sessionsSlice,
+    intrestSlice,
   },
   // Adding middleware for RTK-Query if needed
   middleware: (getDefaultMiddleware) =>

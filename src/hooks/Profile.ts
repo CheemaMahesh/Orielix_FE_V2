@@ -4,9 +4,10 @@ import { addEvents, setEventLoading } from "@/reducers/events";
 import { addUser } from "@/reducers/me";
 import { useDispatch } from "react-redux";
 import { addSessions, setSessionLoading } from "@/reducers/sessions";
+import { addIntrests, setIntrestLoading } from "@/reducers/Intrests";
 
 export const useCallProfileInfo = () => {
-  const { getAllEvents, getMe, getAllSessions } = useProfile();
+  const { getAllEvents, getMe, getAllSessions, getAllIntrests } = useProfile();
   const dispatch = useDispatch();
 
   const getAllEventsByToken = async () => {
@@ -41,9 +42,25 @@ export const useCallProfileInfo = () => {
     }
     dispatch(setSessionLoading(false));
   };
+
+  const getAllIntrestsByToken = async () => {
+    dispatch(setIntrestLoading(true));
+    const res = await getAllIntrests();
+    if (res) {
+      if (res.success) {
+        dispatch(addIntrests(res.intrests));
+      }
+    }
+    dispatch(setIntrestLoading(false));
+  };
+
+  const getAllRolesByToken = async () => {};
+
   return {
     getAllEventsByToken,
     getMeByToken,
     getAllSessionsByToken,
+    getAllIntrestsByToken,
+    getAllRolesByToken,
   };
 };

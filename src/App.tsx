@@ -26,16 +26,19 @@ import UserProfile from "./pages/UserProfile";
 import { RootState } from "./store";
 import { Admin } from "./pages/Admin/Admin";
 
+
 const queryClient = new QueryClient();
 
 const App = () => {
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
   const { events, loading: eventsLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: sessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
+  const { intrests, loading: intrestLoading } = useSelector((state: RootState) => state.intrestSlice);
+
 
   const token = localStorage.getItem("token");
 
-  const { getMeByToken, getAllEventsByToken, getAllSessionsByToken } = useCallProfileInfo();
+  const { getMeByToken, getAllEventsByToken, getAllSessionsByToken, getAllIntrestsByToken } = useCallProfileInfo();
   const { id, userType } = userInfo || {};
   const { isLoading } = useProfile();
 
@@ -70,6 +73,9 @@ const App = () => {
     }
     if (!sessionLoading && (!sessions || sessions.length === 0) && token) {
       getAllSessionsByToken();
+    }
+    if (!intrestLoading && (!intrests || intrests.length === 0) && token) {
+      getAllIntrestsByToken();
     }
   }, [id, isLoading.me, token]);
   return (
