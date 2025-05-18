@@ -39,9 +39,10 @@ import {
   Linkedin,
   Github
 } from 'lucide-react';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "@/reducers/me";
 import { clearSessions } from "@/reducers/sessions";
+import { RootState } from "@/store";
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -126,6 +127,8 @@ export default function UserProfile() {
   const profileRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
+  const userInfo = useSelector((state: RootState) => state.userSlice.user);
+  const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
 
   // User profile data
   const [userData, setUserData] = useState({
@@ -304,6 +307,9 @@ export default function UserProfile() {
                   <button onClick={() => navigate('/community')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
                     Community
                   </button>
+                  {isAdmin && <button onClick={() => navigate('/admin')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
+                    Admin
+                  </button>}
                 </div>
               </div>
             </div>

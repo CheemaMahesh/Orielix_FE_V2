@@ -93,6 +93,7 @@ export default function Events() {
   const [registerEventModal, setRegisteredEventModal] = useState<boolean>(false);
   const [leaveEventModalOpen, setLeaveEventModalOpen] = useState<boolean>(false);
   const isEventLoading = useSelector((state: RootState) => state.eventSlice.loading);
+  const userInfo = useSelector((state: RootState) => state.userSlice.user);
 
 
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function Events() {
       setRegisteredEventModal(true);
     }
   }
+  const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -224,6 +226,9 @@ export default function Events() {
                   <button onClick={() => navigate('/community')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
                     Community
                   </button>
+                  {isAdmin && <button onClick={() => navigate('/admin')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
+                    Admin
+                  </button>}
                 </div>
               </div>
             </div>

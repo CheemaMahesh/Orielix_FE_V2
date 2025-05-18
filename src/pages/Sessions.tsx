@@ -98,6 +98,9 @@ export default function Sessions() {
   const [openSessionDetails, setOpenSessionDetails] = useState<boolean>(false);
   const [showSessionSuccess, setShowSessionSuccess] = useState<boolean>(false);
   const [selectedSession, setSelectedSession] = useState<SessionType>(null);
+  const userInfo = useSelector((state: RootState) => state.userSlice.user);
+  const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -192,6 +195,9 @@ export default function Sessions() {
                   <button onClick={() => navigate('/community')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
                     Community
                   </button>
+                  {isAdmin && <button onClick={() => navigate('/admin')} className="px-5 py-2 rounded-full text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5">
+                    Admin
+                  </button>}
                 </div>
               </div>
             </div>
