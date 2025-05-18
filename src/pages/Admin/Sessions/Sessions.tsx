@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { AddSession } from "@/components/Modals/Sessions/AddSession";
 import { EditSession } from "@/components/Modals/Sessions/EditSession";
 import { createSessionPayloadType } from "@/Api/Admin/Sessions";
+import { DeleteSession } from "@/components/Modals/Sessions/DeleteSession";
 
 
 export const Sessions = () => {
@@ -39,9 +40,8 @@ export const Sessions = () => {
                 <Button onClick={() => setOpenCreate(true)}>Add a Session</Button>
                 <AddEvent open={openCreate} onOpenChange={setOpenCreate} />
                 <AddSession open={openCreate} onOpenChange={setOpenCreate} onSuccess={() => setOpenCreate(false)} />
-                {/* <DeleteEvent open={openDelete} onOpenChange={setOpenDelete} onSuccess={() => setOpenDelete(false)} title={selectedSession?.name} id={selectedSession?.id} />
-                <EditEvent onEventChange={setSelectedEvent} open={openEdit} event={selectedSession} onOpenChange={setOpenEdit} onSuccess={() => setOpenEdit(false)} /> */}
                 {openEdit && <EditSession open={openEdit} onOpenChange={setOpenEdit} currentSession={selectedSession} setCurrentSession={setSelectedSession} onSuccess={() => setOpenEdit(false)} />}
+                {openDelete && <DeleteSession open={openDelete} onOpenChange={setOpenDelete} onSuccess={() => setOpenDelete(false)} title={selectedSession?.name} id={selectedSession?.id} />}
             </div>
         </section>
     )

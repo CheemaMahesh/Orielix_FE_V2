@@ -66,7 +66,7 @@ export const useAdminSessions = () => {
 
   const deleteSession = async (id: string) => {
     try {
-      const payload = { isDeleted: true, sessonId: id };
+      const payload = { isDeleted: true, sessionId: id };
       updateLoading("deleteSession", true);
       const response = await axios.patch(
         `${baseUrl}/api/v1/session/update`,
