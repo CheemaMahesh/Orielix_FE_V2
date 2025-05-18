@@ -1,42 +1,43 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
-import { Button } from '../../ui/button';
-import { useState } from 'react';
+import { createEventPayloadType, useAdminEvents } from '@/Api/Admin/Events';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { useCallProfileInfo } from '@/hooks/Profile';
 import { useToast } from '@/hooks/use-toast';
-import { useAdminEvents } from '@/Api/Admin/Events';
-import { createEventPayloadType } from '@/Api/Admin/Events';
-import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
+import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Button } from '../../ui/button';
+import { createSessionPayloadType, useAdminSessions } from '@/Api/Admin/Sessions';
 
-interface JoinEventProps {
+interface JoinSessionProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSuccess?: () => void;
 }
 
-const EVENT_INITIAL_STATE: createEventPayloadType = {
-    eventName: "",
-    eventDescription: "",
-    eventDate: "",
-    eventImage: "",
-    eventTime: "",
-    eventLocation: "",
+const SESSION_INITIAL_STATE: createSessionPayloadType = {
+    name: "",
+    description: "",
+    date: "",
+    image: "",
+    time: "",
+    location: "",
     presenterId: "",
+    duration: "",
+    id: "",
 };
 
-export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
-    const [currentEvent, setCurrentEvent] = useState<createEventPayloadType>(EVENT_INITIAL_STATE);
-    const { getAllEventsByToken } = useCallProfileInfo();
+export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) => {
+    const [currentSession, setCurrentSession] = useState<createSessionPayloadType>(SESSION_INITIAL_STATE);
+    const { getAllSessionsByToken } = useCallProfileInfo();
     const { toast } = useToast();
-    const { user: users } = useSelector((state: RootState) => state.allUserSlice)
+    const { user: users } = useSelector((state: RootState) => state.allUserSlice);
 
-    const { createEvent, isLoading } = useAdminEvents();
-
-    const updateIntrest = ({ type, value }: { type: string, value: string }) => {
-        setCurrentEvent((prev) => ({
+    const { createSession, isLoading } = useAdminSessions();
+    console.log("currentSession", currentSession);
+    const updateSession = ({ type, value }: { type: string, value: string }) => {
+        setCurrentSession((prev) => ({
             ...prev,
             [type]: value
         }))
@@ -44,26 +45,26 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
 
     const filteredUsers = users.filter((user) => user.userType === "presenter" || user.userType === "admin" || user.userType === "superAdmin" || user.userType === "ta");
 
-    const handleCreateIntrest = async () => {
+    const handleCreateSession = async () => {
         try {
-            if (!currentEvent.eventName || !currentEvent.eventDescription || !currentEvent.eventDate || !currentEvent.eventImage || !currentEvent.eventTime) {
+            if (!currentSession.name || !currentSession.description || !currentSession.date || !currentSession.image || !currentSession.time || !currentSession.presenterId) {
                 toast({
                     title: "Please fill all the fields",
                     variant: "destructive",
                 });
                 return;
             }
-            await createEvent({
-                payload: currentEvent,
+            await createSession({
+                payload: currentSession,
             });
-            getAllEventsByToken();
+            getAllSessionsByToken();
             onSuccess?.();
         } catch (error) {
             console.error("Error creating intrest:", error);
         }
     }
 
-    const selectedPresenter = filteredUsers.find((user) => user.id.toString() === currentEvent.presenterId);
+    const selectedPresenter = filteredUsers.find((user) => user.id.toString() === currentSession.presenterId);
 
     return (
         < Dialog.Root open={open} onOpenChange={onOpenChange} >
@@ -71,62 +72,62 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                 <Dialog.Overlay className="fixed inset-0 bg-black/30 backdrop-blur-sm animate-fade-in z-50" />
                 <Dialog.Content className="fixed left-[50%] top-[50%] h-[90vh] translate-x-[-50%] translate-y-[-50%] z-50 grid w-6/12  gap-4 border bg-white p-6 shadow-lg duration-200 sm:rounded-lg">
                     <Dialog.Title className="text-xl font-semibold text-gray-900">
-                        Create Event
+                        Create Session
                     </Dialog.Title>
                     <Dialog.Description className="text-sm text-gray-500">
                     </Dialog.Description>
                     <section className='border-2 border-gray-300 rounded-lg p-4 overflow-y-scroll h-full'>
                         <div className='flex flex-col gap-4'>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventName" className='text-sm font-semibold'>Event Name</label>
+                                <label htmlFor="name" className='text-sm font-semibold'>Session Name</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventName", value: e.target.value })
-                                }} type="text" id="eventName" placeholder='Enter Intrest Name' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    updateSession({ type: "name", value: e.target.value })
+                                }} type="text" id="name" placeholder='Enter Intrest Name' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventDescription" className='text-sm font-semibold'>Event Description</label>
+                                <label htmlFor="description" className='text-sm font-semibold'>Session Description</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventDescription", value: e.target.value })
-                                }} id="eventDescription" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    updateSession({ type: "description", value: e.target.value })
+                                }} id="description" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             {/* ----------------------------------- */}
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventDate" className='text-sm font-semibold'>Event Date</label>
+                                <label htmlFor="date" className='text-sm font-semibold'>Session Date</label>
                                 <input type="date"
                                     onChange={(e) => {
-                                        setCurrentEvent((prev) => ({ ...prev, eventDate: e.target.value }))
+                                        setCurrentSession((prev) => ({ ...prev, date: e.target.value }))
                                     }}
                                     className='border-2 border-gray-300 rounded-lg p-2'
                                 />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventImage" className='text-sm font-semibold'>Event Image</label>
+                                <label htmlFor="image" className='text-sm font-semibold'>Session Image</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventImage", value: e.target.value })
-                                }} id="eventImage" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    updateSession({ type: "image", value: e.target.value })
+                                }} id="image" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventTime" className='text-sm font-semibold'>Event Time</label>
+                                <label htmlFor="time" className='text-sm font-semibold'>Session Time</label>
                                 <input type="time" required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventTime", value: e.target.value })
-                                }} id="eventTime" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    updateSession({ type: "time", value: e.target.value })
+                                }} id="time" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="eventLocation" className='text-sm font-semibold'>Event Location</label>
+                                <label htmlFor="location" className='text-sm font-semibold'>Session Location</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventLocation", value: e.target.value })
-                                }} id="eventLocation" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    updateSession({ type: "location", value: e.target.value })
+                                }} id="location" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <label htmlFor="e" className='text-sm font-semibold'>Event Presenter</label>
+                                <label htmlFor="e" className='text-sm font-semibold'>Session Presenter</label>
                                 <Select
-                                    value={currentEvent.presenterId.toString()}
-                                    onValueChange={(value) => updateIntrest({ type: "presenterId", value })}
+                                    value={currentSession.presenterId.toString()}
+                                    onValueChange={(value) => updateSession({ type: "presenterId", value })}
                                 >
                                     <SelectTrigger>{selectedPresenter ? (selectedPresenter.username || selectedPresenter.firstName) : "Select Presenter"}</SelectTrigger>
                                     <SelectContent>
@@ -139,6 +140,13 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                                     </SelectContent>
                                 </Select>
                             </div>
+                            <div className='flex flex-col gap-2'>
+                                <label htmlFor="duration" className='text-sm font-semibold'>Session Duration (In Minutes)</label>
+                                <input type='number' required onChange={(e) => {
+                                    e.preventDefault();
+                                    updateSession({ type: "duration", value: e.target.value })
+                                }} id="duration" placeholder='Enter Session Duration' className='border-2 border-gray-300 rounded-lg p-2' />
+                            </div>
                             {/* ----------------------------------- */}
                         </div>
                     </section>
@@ -146,7 +154,7 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                         <X className="h-4 w-4" />
                         <span className="sr-only">Close</span>
                     </Dialog.Close>
-                    <Button isLoading={isLoading.event} onClick={handleCreateIntrest} variant="default">Create Event</Button>
+                    <Button isLoading={isLoading.session} onClick={handleCreateSession} variant="default">Create Session</Button>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root >

@@ -3,28 +3,30 @@ import { config } from "../Hooks";
 import axios from "axios";
 
 type Loading = {
-  event: boolean;
-  deleteEvent: boolean;
-  editEvent: boolean;
+  session: boolean;
+  deleteSession: boolean;
+  editSession: boolean;
 };
 
 const LOADING_INITIAL_STATE: Loading = {
-  event: false,
-  deleteEvent: false,
-  editEvent: false,
+  session: false,
+  deleteSession: false,
+  editSession: false,
 };
 
-export type createEventPayloadType = {
-  eventName: string;
-  eventDescription: string;
-  eventDate: string;
-  eventImage: string;
-  eventTime: string;
-  eventLocation: string;
+export type createSessionPayloadType = {
+  name: string;
+  description: string;
+  date: string;
+  image: string;
+  time: string;
+  location: string;
   presenterId: string;
+  duration: string;
+  id: string;
 };
 
-export const useAdminEvents = () => {
+export const useAdminSessions = () => {
   const baseUrl = config.apiUrl;
   const token = localStorage.getItem("token");
   const [isLoading, setLoading] = useState<Loading>(LOADING_INITIAL_STATE);
@@ -36,15 +38,15 @@ export const useAdminEvents = () => {
     }));
   };
 
-  const createEvent = async ({
+  const createSession = async ({
     payload,
   }: {
-    payload: createEventPayloadType;
+    payload: createSessionPayloadType;
   }) => {
     try {
-      updateLoading("event", true);
+      updateLoading("session", true);
       const response = await axios.post(
-        `${baseUrl}/api/v1/event/create`,
+        `${baseUrl}/api/v1/session/create`,
         payload,
         {
           headers: {
@@ -58,16 +60,16 @@ export const useAdminEvents = () => {
       console.error("Error creating event:", error);
       throw error;
     } finally {
-      updateLoading("event", false);
+      updateLoading("session", false);
     }
   };
 
-  const deleteEvent = async (id: string) => {
+  const deleteSession = async (id: string) => {
     try {
-      const payload = { isDeleted: true, eventId: id };
-      updateLoading("deleteEvent", true);
+      const payload = { isDeleted: true, sessonId: id };
+      updateLoading("deleteSession", true);
       const response = await axios.patch(
-        `${baseUrl}/api/v1/event/update`,
+        `${baseUrl}/api/v1/session/update`,
         payload,
         {
           headers: {
@@ -78,20 +80,20 @@ export const useAdminEvents = () => {
       );
       return response.data;
     } catch (err) {
-      console.error("Error deleting event:", err);
+      console.error("Error deleting Session:", err);
       throw err;
     } finally {
-      updateLoading("deleteEvent", false);
+      updateLoading("deleteSession", false);
     }
   };
 
-  const EditEvent = async (
-    payload: createEventPayloadType & { eventId: string }
+  const editSession = async (
+    payload: Omit<createSessionPayloadType, "id"> & { sessionId: string }
   ) => {
     try {
-      updateLoading("editEvent", true);
+      updateLoading("editSession", true);
       const response = await axios.patch(
-        `${baseUrl}/api/v1/event/update`,
+        `${baseUrl}/api/v1/session/update`,
         payload,
         {
           headers: {
@@ -102,16 +104,16 @@ export const useAdminEvents = () => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error updating event:", error);
+      console.error("Error updating Session:", error);
       throw error;
     } finally {
-      updateLoading("editEvent", false);
+      updateLoading("editSession", false);
     }
   };
   return {
     isLoading,
-    createEvent,
-    deleteEvent,
-    EditEvent,
+    createSession,
+    deleteSession,
+    editSession,
   };
 };

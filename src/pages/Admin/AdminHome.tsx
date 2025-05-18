@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { Intrests } from "./Intrests/Intrests";
 import { Users } from "./Users/Users";
 import { Events } from "./Events/Events";
+import { Sessions } from "./Sessions/Sessions";
 
 export const AdminHome = () => {
     const { getAllUsers, isLoading } = useAdminUsers();
@@ -31,7 +32,7 @@ export const AdminHome = () => {
             case "Add Events":
                 return <div><Events /></div>
             case "Add Sessions":
-                return <div>Add Sessions</div>
+                return <div><Sessions /></div>
             case "Add Users":
                 return <div><Users /></div>
             case "Add Speakers":

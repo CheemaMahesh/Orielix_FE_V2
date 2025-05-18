@@ -1,9 +1,9 @@
+import { useAdminEvents } from '@/Api/Admin/Events';
+import { useCallProfileInfo } from '@/hooks/Profile';
+import { useToast } from '@/hooks/use-toast';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { Button } from '../../ui/button';
-import { useCallProfileInfo } from '@/hooks/Profile';
-import { useAdminIntrests } from '@/Api/Admin/Intrests';
-import { useToast } from '@/hooks/use-toast';
 
 interface JoinEventProps {
     open: boolean;
@@ -14,21 +14,21 @@ interface JoinEventProps {
 }
 
 export const DeleteEvent = ({ open, onOpenChange, onSuccess, title, id }: JoinEventProps) => {
-    const { getAllIntrestsByToken } = useCallProfileInfo();
+    const { getAllEventsByToken } = useCallProfileInfo();
     const { toast } = useToast();
 
-    const { isLoading, deleteIntrest } = useAdminIntrests();
+    const { deleteEvent, isLoading } = useAdminEvents();
 
-
-    const handleCreateIntrest = async () => {
+    const handleDeleteEvent = async (e: React.MouseEvent<HTMLButtonElement>) => {
         try {
-            const res = await deleteIntrest(id as string);
+            e.preventDefault();
+            const res = await deleteEvent(id as string);
             if (res && res.success) {
-                getAllIntrestsByToken();
-                onSuccess();
+                getAllEventsByToken();
+                onSuccess?.();
                 toast({
-                    title: "Intrest Deleted",
-                    description: "Intrest Deleted Successfully",
+                    title: "Event Deleted",
+                    description: "Event Deleted Successfully",
                     variant: "default",
                     duration: 1000,
                 });
@@ -48,7 +48,7 @@ export const DeleteEvent = ({ open, onOpenChange, onSuccess, title, id }: JoinEv
                     </Dialog.Title>
                     <>
                         <div className='text-red-600 font-bold'>You are about to delete the Event <span className='text-blue-500 font-bold text-lg'>{title}</span>. <p>Are you sure ?</p></div>
-                        <Button isLoading={isLoading.deleteIntrest} onClick={handleCreateIntrest} variant="destructive">Delete Intrest</Button>
+                        <Button isLoading={isLoading.deleteEvent} onClick={handleDeleteEvent} variant="destructive">Delete Event</Button>
                         <Dialog.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
                             <X className="h-4 w-4" />
                             <span className="sr-only">Close</span>
