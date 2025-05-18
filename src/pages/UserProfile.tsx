@@ -1,48 +1,42 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import {
-  HomeIcon as Home,
-  CalendarIcon as Calendar,
-  BookOpenIcon as BookOpen,
-  UsersIcon as Users,
-  UserIcon as User,
-  BellIcon as Bell,
-  LogOut,
-  X,
-  Settings,
-  Camera,
-  Edit as EditIcon,
-  Award,
-  Star,
-  Heart,
-  MessageSquare,
-  Image,
-  FileText,
-  Mail,
-  Phone,
-  MapPin,
-  Link,
-  Save as SaveIcon,
-  Plus,
-  Globe,
-  Linkedin,
-  Github
-} from 'lucide-react';
-import { useDispatch, useSelector } from "react-redux";
+import { IntrestType } from "@/reducers/Intrests";
 import { clearUser } from "@/reducers/me";
 import { clearSessions } from "@/reducers/sessions";
 import { RootState } from "@/store";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  BellIcon as Bell,
+  BookOpenIcon as BookOpen,
+  CalendarIcon as Calendar,
+  Camera,
+  Edit as EditIcon,
+  Github,
+  Globe,
+  Heart,
+  HomeIcon as Home,
+  Link,
+  Linkedin,
+  LogOut,
+  Mail,
+  MapPin,
+  Pencil,
+  Save as SaveIcon,
+  UserIcon as User,
+  UsersIcon as Users,
+  X
+} from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+// import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { set } from "date-fns";
+import { useProfile } from "@/Api/Profile";
+import { useCallProfileInfo } from "@/hooks/Profile";
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -120,60 +114,31 @@ const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
 export default function UserProfile() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
+  const { updateIntrest, isLoading, deleteIntrest } = useProfile();
+  const { getMeByToken } = useCallProfileInfo();
+
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
-  const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+  const intrests = userInfo?.intrests;
+  const isValidIntrests = userInfo?.intrests && userInfo?.intrests.length > 0;
+  const [selectedIntrests, setSelectedIntrests] = useState<IntrestType[] | null>();
 
-  // User profile data
-  const [userData, setUserData] = useState({
-    name: "John Doe",
-    username: "johndoe",
-    role: "AI Researcher",
-    bio: "AI researcher with a focus on computer vision and natural language processing. Passionate about developing ethical AI solutions that solve real-world problems.",
-    email: "john.doe@example.com",
-    location: "San Francisco, CA",
-    portfolio: "johndoe.portfolio",
-    linkedin: "johndoe",
-    github: "johndoe",
-    interests: ["Technology", "Startup", "Graphic Design", "UI/UX", "Editing", "Content Writing", "Game Development", "Marketing", "Animation"]
-  });
+  const isAdmin = userInfo && userInfo.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+  const isUpdateIntrest = intrests && intrests.length > 0;
 
-  // Handle scroll for navbar visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+  const userIntrest = useSelector((state: RootState) => state.intrestSlice.intrests);
+  const [validIntrests, setValidIntrests] = useState<IntrestType[] | undefined>(
+    userIntrest?.filter((intrest) => (isValidIntrests ? !intrests.some(userIntrest => userIntrest === intrest?.id) : true) && (selectedIntrests ? !selectedIntrests?.some((userIntrest) => userIntrest.id === intrest?.id) : true))
+  );
+  const showMyIntrests = userIntrest?.filter((intrest) => isValidIntrests ? intrests?.includes(intrest.id) : false);
 
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [lastScrollY]);
-
-
-
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-    setUserData({
-      ...userData,
-      [field]: e.target.value
-    });
-  };
+  const [about, setAbout] = useState<string>(userInfo?.about || "");
+  const [isOpenAboutEdit, setIsOpenAboutEdit] = useState<boolean>(false);
 
   // Toggle edit mode
   const toggleEditMode = () => {
@@ -193,6 +158,49 @@ export default function UserProfile() {
     localStorage.removeItem("token");
     navigate("/login");
   }
+
+  const handleAddSelectIntrest = (intrest: IntrestType) => {
+    if (selectedIntrests?.some((item) => item.id === intrest.id)) {
+      return;
+    }
+    if (selectedIntrests) {
+      setSelectedIntrests([...selectedIntrests, intrest]);
+    } else {
+      setSelectedIntrests([intrest]);
+    }
+  }
+
+  const updateShowIntrests = () => {
+    setValidIntrests(
+      userIntrest?.filter((intrest) => (isValidIntrests ? !intrests.some(userIntrest => userIntrest === intrest?.id) : true) && (selectedIntrests ? !selectedIntrests?.some((userIntrest) => userIntrest.id === intrest?.id) : true))
+    );
+  }
+
+  const handleRemoveSelectIntrest = (id: string) => {
+    if (selectedIntrests) {
+      const updatedIntrests = selectedIntrests.filter((item) => item.id !== id);
+      setSelectedIntrests(updatedIntrests);
+    }
+  }
+  const handleUpdateIntrest = async () => {
+    await updateIntrest(selectedIntrests);
+    getMeByToken();
+    updateShowIntrests();
+    setIsEditOpen(false);
+    setSelectedIntrests(null)
+  }
+
+  const hnadleDeleteIntrest = async (id: string) => {
+    await deleteIntrest(id);
+    getMeByToken();
+    updateShowIntrests();
+    setIsEditOpen(false);
+    setSelectedIntrests(null)
+  }
+
+  useEffect(() => {
+    updateShowIntrests();
+  }, [userIntrest, isValidIntrests, selectedIntrests, intrests]);
 
   return (
     <div className="min-h-screen bg-transparent text-gray-900 transition-colors duration-300 relative overflow-hidden">
@@ -328,7 +336,7 @@ export default function UserProfile() {
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                    <AvatarImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" />
+                    <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">John Doe</span>
@@ -406,7 +414,7 @@ export default function UserProfile() {
                 <div className="relative rounded-full p-1 bg-white shadow-xl">
                   <div className="relative group overflow-hidden rounded-full">
                     <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white">
-                      <AvatarImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" className="object-cover" />
+                      <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" className="object-cover" />
                       <AvatarFallback className="text-3xl md:text-4xl">JD</AvatarFallback>
                     </Avatar>
                     {editMode && (
@@ -434,10 +442,10 @@ export default function UserProfile() {
               >
                 <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 md:gap-6">
                   <div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-indigo-900 mb-2">{userData.name}</h1>
+                    <h1 className="text-2xl md:text-4xl font-bold text-indigo-900 mb-2">{userInfo?.firstName}</h1>
                     <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-2 sm:gap-4">
-                      <p className="text-base md:text-lg font-medium text-indigo-700">@{userData.username}</p>
-                      <p className="px-3 py-1 rounded-full text-xs md:text-sm bg-indigo-100 text-indigo-600">{userData.role}</p>
+                      <p className="text-base md:text-lg font-medium text-indigo-700">@{userInfo?.username}</p>
+                      {/* <p className="px-3 py-1 rounded-full text-xs md:text-sm bg-indigo-100 text-indigo-600">{userInfo.role}</p> */}
                     </div>
                   </div>
 
@@ -470,8 +478,6 @@ export default function UserProfile() {
                         Edit Profile
                       </Button>
                     )}
-                    <Button onClick={handleLogout} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
-                    >Logout</Button>
                   </div>
                 </div>
 
@@ -479,12 +485,12 @@ export default function UserProfile() {
                 <div className="mt-4 md:mt-6 flex flex-wrap gap-2 md:gap-3 justify-center lg:justify-start">
                   <Badge variant="outline" className="bg-white/80 text-indigo-700 border-indigo-200 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 rounded-full text-xs md:text-sm">
                     <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                    {userData.email}
+                    {userInfo?.email}
                   </Badge>
-                  <Badge variant="outline" className="bg-white/80 text-indigo-700 border-indigo-200 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 rounded-full text-xs md:text-sm">
+                  {/* <Badge variant="outline" className="bg-white/80 text-indigo-700 border-indigo-200 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 rounded-full text-xs md:text-sm">
                     <MapPin className="h-3 w-3 md:h-4 md:w-4" />
-                    {userData.location}
-                  </Badge>
+                    {userData?.location}
+                  </Badge> */}
                 </div>
 
                 {/* Action Buttons - Mobile only */}
@@ -537,17 +543,25 @@ export default function UserProfile() {
                   <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
                     <User className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" />
                   </div>
-                  <h2 className="text-lg md:text-xl font-bold text-indigo-800">About</h2>
+                  <div className=" flex w-full items-center justify-between"><h2 className="text-lg md:text-xl font-bold text-indigo-800">About</h2><div onClick={() => setIsOpenAboutEdit(true)} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} /><div>Edit</div></div></div>
                 </div>
 
-                {editMode ? (
-                  <Textarea
-                    value={userData.bio}
-                    onChange={(e) => handleInputChange(e, 'bio')}
-                    className="w-full min-h-[120px] rounded-xl bg-white border-indigo-200 text-gray-700"
-                  />
+                {isOpenAboutEdit ? (
+                  <div>
+                    <Textarea
+                      value={userInfo?.about || about}
+                      onChange={(e) => setAbout(e.target.value)}
+                      className="w-full min-h-[120px] rounded-xl bg-white border-indigo-200 text-gray-700"
+                      placeholder="Write something about yourself..."
+                    />
+                    <div className="mt-2 w-full flex justify-end items-center gap-2.5">
+                      <Button onClick={() => setIsOpenAboutEdit(false)} variant="outline">Cancel</Button>
+                      <Button>Save</Button>
+                    </div>
+                  </div>
+
                 ) : (
-                  <p className="text-lg leading-relaxed text-gray-700">{userData.bio}</p>
+                  <p className="text-lg leading-relaxed text-gray-700">{userInfo?.about}</p>
                 )}
               </div>
             </div>
@@ -566,26 +580,50 @@ export default function UserProfile() {
                   <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
                     <Heart className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" />
                   </div>
-                  <h2 className="text-lg md:text-xl font-bold text-indigo-800">Interests</h2>
+                  <div className="w-full t-gap-2 flex justify-between px-3 items-center"><h2 className="text-lg md:text-xl font-bold text-indigo-800">Interests</h2>
+                    <div className="w-fit flex gap-10">
+                      {!isEditOpen && <div onClick={() => setIsEditOpen(true)} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} />{isUpdateIntrest ? "Update" : "Edit"}</div>}
+                    </div>
+                  </div>
                 </div>
+                {selectedIntrests?.length > 0 && <div className="flex flex-wrap gap-2 md:gap-3 mb-4">{
+                  selectedIntrests?.map((intrest) => (<Tooltip key={intrest.id}>
+                    <TooltipTrigger asChild><div onClick={() => handleRemoveSelectIntrest(intrest?.id)} className="text-sm rounded-lg w-fit h-fit px-2.5 py-1.5 bg-indigo-100 text-purple-500 font-semibold flex gap-2 items-center cursor-pointer">{intrest.name}<X className="h-3 w-3" /></div></TooltipTrigger>
+                    <TooltipContent side="right" className="bg-black p-3 text-white ml-2 rounded-lg">
+                      {intrest.description}
+                    </TooltipContent>
+                  </Tooltip>
+                  ))}</div>}
+                {isEditOpen && <div className="flex flex-wrap w-full gap-2 md:gap-3 mb-4">
+                  {validIntrests?.map((intrest) => (
 
-                <div className="p-6 rounded-2xl bg-white/90 backdrop-blur-sm border border-purple-200 shadow-sm">
+                    <div
+                      onClick={() => handleAddSelectIntrest(intrest)}
+                      className="w-fit h-fit p-2 px-3.5 rounded-md bg-purple-200 text-purple-700 font-mono text-lg cursor-pointer line-clamp-1 truncate"
+                      key={intrest.id}
+                    >
+                      {intrest.name}
+                    </div>
+                  ))}
+                </div>}
+                {isUpdateIntrest && <div className="p-6 rounded-2xl bg-white/90 backdrop-blur-sm border border-purple-200 shadow-sm">
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {userData.interests.map((interest, index) => (
+                    {showMyIntrests.map((interest, index) => (
                       <motion.div
                         key={index}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        className="relative px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-purple-50/70 hover:bg-purple-100 backdrop-blur-sm transition-all duration-300 cursor-pointer overflow-hidden group"
+                        className="relative w-fit px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-purple-50/70 hover:bg-purple-100 backdrop-blur-sm transition-all duration-300 cursor-pointer overflow-hidden group"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-purple-700">{interest}</span>
-                          {editMode && (
+                          <span className="text-sm font-medium text-purple-700">{interest?.name}</span>
+                          {isEditOpen && (
                             <motion.button
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ duration: 0.2 }}
-                              className="h-5 w-5 rounded-full flex items-center justify-center bg-white text-gray-500 hover:bg-red-100 hover:text-red-500"
+                              onClick={() => hnadleDeleteIntrest(interest?.id)}
+                              className="h-5 w-5 ml-1 rounded-full flex items-center justify-center bg-white text-gray-500 hover:bg-red-100 hover:text-red-500"
                             >
                               <X className="h-3 w-3" />
                             </motion.button>
@@ -593,24 +631,15 @@ export default function UserProfile() {
                         </div>
                       </motion.div>
                     ))}
-                    {editMode && (
-                      <motion.div
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="px-4 py-2 rounded-full bg-white/70 border-purple-200 hover:bg-white border-dashed border-2 cursor-pointer flex items-center justify-center"
-                      >
-                        <Plus className="h-5 w-5 text-purple-500 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">New Interest</span>
-                      </motion.div>
-                    )}
                   </div>
-                </div>
+                </div>}
+                {isEditOpen && <div className="w-full flex justify-end py-2 p-x1 gap-3"><Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button><Button onClick={handleUpdateIntrest} isLoading={isLoading.intrestupdate || isLoading.intrestDelete}>Save</Button></div>}
               </div>
             </div>
           </motion.div>
 
           {/* Social Links Section */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
@@ -685,9 +714,11 @@ export default function UserProfile() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
+          <Button onClick={handleLogout} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
+          >Logout</Button>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }

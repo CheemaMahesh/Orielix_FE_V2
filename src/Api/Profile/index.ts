@@ -3,6 +3,7 @@ import { UserResponse } from "@/reducers/me";
 import axios from "axios";
 import { useState } from "react";
 import { config } from "../Hooks";
+import { IntrestType } from "@/reducers/Intrests";
 
 type ProfileLoading = {
   me: boolean;
@@ -13,6 +14,8 @@ type ProfileLoading = {
   joinsession: boolean;
   intrest: boolean;
   role: boolean;
+  intrestupdate: boolean;
+  intrestDelete: boolean;
 };
 
 export type MeResponse = {
@@ -39,6 +42,8 @@ export const useProfile = () => {
     joinsession: false,
     intrest: false,
     role: false,
+    intrestupdate: false,
+    intrestDelete: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -204,6 +209,47 @@ export const useProfile = () => {
     }
   };
 
+  const updateIntrest = async (interests: IntrestType[]) => {
+    try {
+      handleLoading("intrestupdate", true);
+      const response = await axios.post(
+        `${config.apiUrl}/api/v1/user/intrest/update`,
+        {
+          interests: interests?.map((interest) => interest.id),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateIntrest:", err);
+    } finally {
+      handleLoading("intrestupdate", false);
+    }
+  };
+
+  const deleteIntrest = async (id: string) => {
+    try {
+      handleLoading("intrestDelete", true);
+      const response = await axios.delete(
+        `${config.apiUrl}/api/v1/user/delete/intrest/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during deleteIntrest:", err);
+    } finally {
+      handleLoading("intrestDelete", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -214,5 +260,7 @@ export const useProfile = () => {
     joinSession,
     getAllIntrests,
     getAllRoles,
+    updateIntrest,
+    deleteIntrest,
   };
 };
