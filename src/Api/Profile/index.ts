@@ -41,7 +41,6 @@ export const useProfile = () => {
     role: false,
   });
   const handleLoading = (type: string, value: boolean) => {
-    console.log("Loading state changed:", type, value);
     setIsLoading((prevState) => ({
       ...prevState,
       [type]: value,

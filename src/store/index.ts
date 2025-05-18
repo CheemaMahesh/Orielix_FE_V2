@@ -4,6 +4,7 @@ import userSlice from "../reducers/me";
 import eventSlice from "../reducers/events";
 import sessionsSlice from "../reducers/sessions";
 import intrestSlice from "../reducers/Intrests";
+import allUserSlice from "../reducers/users";
 
 // You'll add reducers here later
 const store = configureStore({
@@ -12,6 +13,7 @@ const store = configureStore({
     eventSlice,
     sessionsSlice,
     intrestSlice,
+    allUserSlice,
   },
   // Adding middleware for RTK-Query if needed
   middleware: (getDefaultMiddleware) =>

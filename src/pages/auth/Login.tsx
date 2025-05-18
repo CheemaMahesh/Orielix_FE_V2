@@ -37,7 +37,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const res: LoginResponse = await login({ email: userData.email, password: userData.password });
-      console.log("Login response:", res);
       if (res.success) {
         toast({
           title: "Login successful!",
@@ -55,7 +54,6 @@ const Login = () => {
     }
   }
 
-  console.log("userData", userData);
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white overflow-hidden">
       <div className="max-w-md w-full px-6 overflow-y-auto max-h-screen py-6">

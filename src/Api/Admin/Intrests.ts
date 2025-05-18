@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { config } from "../Hooks";
+import axios from "axios";
 
 export type AddIntrest = {
   name: string;
@@ -8,6 +9,8 @@ export type AddIntrest = {
 
 type Loading = {
   intrest: boolean;
+  deleteIntrest: boolean;
+  editIntrest: boolean;
 };
 
 export const useAdminIntrests = () => {
@@ -15,8 +18,10 @@ export const useAdminIntrests = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setLoading] = useState<Loading>({
     intrest: false,
+    deleteIntrest: false,
+    editIntrest: false,
   });
-  const updateLoading = (type: string, value: boolean) => {
+  const updateLoading = (type: keyof Loading, value: boolean) => {
     setLoading((prev) => ({
       ...prev,
       [type]: value,
@@ -26,27 +31,17 @@ export const useAdminIntrests = () => {
   const createIntrest = async ({ name, description }: AddIntrest) => {
     try {
       updateLoading("intrest", true);
-      const response = await fetch(
+      const response = await axios.post(
         `${baseUrl}/api/v1/preferences/intrest/create`,
+        { name, description },
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            name,
-            description,
-          }),
         }
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to create intrest");
-      }
-
-      const data = await response.json();
-      return data;
+      return response.data;
     } catch (error) {
       console.error("Error creating intrest:", error);
       throw error;
@@ -55,5 +50,49 @@ export const useAdminIntrests = () => {
     }
   };
 
-  return { createIntrest, isLoading };
+  const deleteIntrest = async (id: string) => {
+    try {
+      updateLoading("deleteIntrest", true);
+      const response = await axios.patch(
+        `${baseUrl}/api/v1/preferences/intrest/update`,
+        { intrestId: id, isDeleted: true },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Error updating intrest:", err);
+      throw err;
+    } finally {
+      updateLoading("deleteIntrest", false);
+    }
+  };
+
+  const editIntrest = async ({ id, name, description }) => {
+    try {
+      updateLoading("editIntrest", true);
+      const response = await axios.patch(
+        `${baseUrl}/api/v1/preferences/intrest/update`,
+        { intrestId: id, name, description },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Error updating intrest:", err);
+      throw err;
+    } finally {
+      updateLoading("editIntrest", false);
+    }
+  };
+
+  return { createIntrest, deleteIntrest, isLoading, editIntrest };
 };

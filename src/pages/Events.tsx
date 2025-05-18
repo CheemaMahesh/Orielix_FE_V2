@@ -403,7 +403,7 @@ export default function Events() {
                               </div>
                               <SelectValue placeholder="All Categories" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white/95 backdrop-blur-sm border-indigo-100 rounded-xl shadow-xl p-1.5 border-t border-indigo-50">
+                            <SelectContent className="bg-white/95 backdrop-blur-sm  rounded-xl shadow-xl p-1.5 border-t border-indigo-50">
                               <div className="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 rounded-lg p-2 mb-2">
                                 <SelectItem value="all" className="rounded-lg hover:bg-white flex items-center gap-2 pl-2 h-9 transition-all duration-200">
                                   <span className="text-indigo-600 font-medium">All Categories</span>
