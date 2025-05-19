@@ -16,6 +16,8 @@ type ProfileLoading = {
   role: boolean;
   intrestupdate: boolean;
   intrestDelete: boolean;
+  updateBio: boolean;
+  updateNames: boolean;
 };
 
 export type MeResponse = {
@@ -44,6 +46,8 @@ export const useProfile = () => {
     role: false,
     intrestupdate: false,
     intrestDelete: false,
+    updateBio: false,
+    updateNames: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -250,6 +254,57 @@ export const useProfile = () => {
     }
   };
 
+  const updateBio = async (bio: string) => {
+    try {
+      handleLoading("updateBio", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/update/bio`,
+        {
+          bio,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateBio:", err);
+    } finally {
+      handleLoading("updateBio", false);
+    }
+  };
+
+  const updateNames = async ({
+    firstName,
+    lastName,
+  }: {
+    firstName: string;
+    lastName?: string;
+  }) => {
+    try {
+      handleLoading("updateNames", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/update/names`,
+        {
+          firstName,
+          lastName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateNames:", err);
+    } finally {
+      handleLoading("updateNames", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -262,5 +317,7 @@ export const useProfile = () => {
     getAllRoles,
     updateIntrest,
     deleteIntrest,
+    updateBio,
+    updateNames,
   };
 };

@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { IntrestType } from "@/reducers/Intrests";
 import { clearUser } from "@/reducers/me";
@@ -14,15 +13,10 @@ import {
   CalendarIcon as Calendar,
   Camera,
   Edit as EditIcon,
-  Github,
-  Globe,
   Heart,
   HomeIcon as Home,
-  Link,
-  Linkedin,
   LogOut,
   Mail,
-  MapPin,
   Pencil,
   Save as SaveIcon,
   UserIcon as User,
@@ -33,10 +27,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 // import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
-import { set } from "date-fns";
 import { useProfile } from "@/Api/Profile";
 import { useCallProfileInfo } from "@/hooks/Profile";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -45,6 +38,14 @@ interface StatCardProps {
   label: string;
   color: string;
 }
+
+type ProfileInfotype = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  username?: string;
+}
+
 
 const StatCard = ({ icon, value, label, color }: StatCardProps) => (
   <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg">
@@ -61,17 +62,6 @@ interface InterestTagProps {
   text: string;
   onClick?: () => void;
 }
-
-const InterestTag = ({ text, onClick }: InterestTagProps) => (
-  <motion.div
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 cursor-pointer transition-colors duration-300 hover:bg-white/30 text-xs md:text-sm"
-    onClick={onClick}
-  >
-    <span className="font-medium">{text}</span>
-  </motion.div>
-);
 
 
 // NavItem component for sidebar
@@ -119,7 +109,7 @@ export default function UserProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const { updateIntrest, isLoading, deleteIntrest } = useProfile();
+  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames } = useProfile();
   const { getMeByToken } = useCallProfileInfo();
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
@@ -139,6 +129,12 @@ export default function UserProfile() {
 
   const [about, setAbout] = useState<string>(userInfo?.about || "");
   const [isOpenAboutEdit, setIsOpenAboutEdit] = useState<boolean>(false);
+  const [profileInfo, setProfileInfo] = useState<ProfileInfotype | null>({
+    firstName: userInfo?.firstName || "",
+    lastName: userInfo?.lastName || "",
+    username: userInfo?.username || "",
+    email: userInfo?.email || "",
+  });
 
   // Toggle edit mode
   const toggleEditMode = () => {
@@ -197,6 +193,39 @@ export default function UserProfile() {
     setIsEditOpen(false);
     setSelectedIntrests(null)
   }
+
+  const updateBioInfo = async () => {
+    await updateBio(about);
+    getMeByToken();
+    setIsOpenAboutEdit(false);
+  }
+
+  const updateNamesByToken = async () => {
+    const res = await updateNames({
+      firstName: profileInfo.firstName,
+      lastName: profileInfo.lastName,
+    });
+    if (res?.success) {
+      getMeByToken();
+      setEditMode(false);
+    }
+  }
+
+  const handleSetProfileInfor = (type: string, value: string) => {
+    setProfileInfo((prev) => ({
+      ...prev,
+      [type]: value,
+    }))
+  }
+
+  useEffect(() => {
+    setProfileInfo({
+      firstName: userInfo?.firstName || "",
+      lastName: userInfo?.lastName || "",
+      username: userInfo?.username || "",
+      email: userInfo?.email || "",
+    })
+  }, [userInfo]);
 
   useEffect(() => {
     updateShowIntrests();
@@ -441,13 +470,24 @@ export default function UserProfile() {
                 className="flex-1 text-center lg:text-left"
               >
                 <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 md:gap-6">
-                  <div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-indigo-900 mb-2">{userInfo?.firstName}</h1>
+                  {!editMode ? <div>
+                    <div className="flex gap-3 w-fit"><h1 className="text-2xl md:text-4xl font-bold text-indigo-900 mb-2">{profileInfo?.firstName}</h1><h1 className="text-2xl md:text-4xl font-bold text-indigo-900 mb-2">{profileInfo?.lastName}</h1></div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-2 sm:gap-4">
-                      <p className="text-base md:text-lg font-medium text-indigo-700">@{userInfo?.username}</p>
+                      <p className="text-base md:text-lg font-medium text-indigo-700">@{profileInfo?.username || ""}</p>
                       {/* <p className="px-3 py-1 rounded-full text-xs md:text-sm bg-indigo-100 text-indigo-600">{userInfo.role}</p> */}
                     </div>
-                  </div>
+                  </div> : <div className=" flex gap-2 flex-col">
+                    <div className="flex gap-10">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-gray-600">First Name</label>
+                        <input onChange={(e) => handleSetProfileInfor("firstName", e.target.value)} value={profileInfo?.firstName || ""} placeholder="Enter your First Name" className="w-64 h-8 px-1" />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-gray-600">Last Name</label>
+                        <input onChange={(e) => handleSetProfileInfor("lastName", e.target.value)} value={profileInfo?.lastName || ""} placeholder="Enter your Last Name" className="w-64 h-8 px-1" />
+                      </div>
+                    </div>
+                  </div>}
 
                   {/* Action Buttons - Hidden on mobile, shown on desktop */}
                   <div className="hidden lg:flex gap-3 justify-center lg:justify-end">
@@ -463,7 +503,8 @@ export default function UserProfile() {
                         </Button>
                         <Button
                           className="rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                          onClick={saveProfile}
+                          onClick={updateNamesByToken}
+                          isLoading={isLoading.updateNames}
                         >
                           <SaveIcon className="mr-2 h-4 w-4" />
                           Save Changes
@@ -485,12 +526,8 @@ export default function UserProfile() {
                 <div className="mt-4 md:mt-6 flex flex-wrap gap-2 md:gap-3 justify-center lg:justify-start">
                   <Badge variant="outline" className="bg-white/80 text-indigo-700 border-indigo-200 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 rounded-full text-xs md:text-sm">
                     <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                    {userInfo?.email}
+                    {profileInfo?.email}
                   </Badge>
-                  {/* <Badge variant="outline" className="bg-white/80 text-indigo-700 border-indigo-200 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 rounded-full text-xs md:text-sm">
-                    <MapPin className="h-3 w-3 md:h-4 md:w-4" />
-                    {userData?.location}
-                  </Badge> */}
                 </div>
 
                 {/* Action Buttons - Mobile only */}
@@ -549,19 +586,18 @@ export default function UserProfile() {
                 {isOpenAboutEdit ? (
                   <div>
                     <Textarea
-                      value={userInfo?.about || about}
+                      value={about || userInfo?.about}
                       onChange={(e) => setAbout(e.target.value)}
                       className="w-full min-h-[120px] rounded-xl bg-white border-indigo-200 text-gray-700"
                       placeholder="Write something about yourself..."
                     />
                     <div className="mt-2 w-full flex justify-end items-center gap-2.5">
                       <Button onClick={() => setIsOpenAboutEdit(false)} variant="outline">Cancel</Button>
-                      <Button>Save</Button>
+                      <Button onClick={updateBioInfo} isLoading={isLoading?.updateBio}>Save</Button>
                     </div>
                   </div>
-
                 ) : (
-                  <p className="text-lg leading-relaxed text-gray-700">{userInfo?.about}</p>
+                  <p className="text-lg leading-relaxed text-gray-700 line-clamp-4">{userInfo?.about}</p>
                 )}
               </div>
             </div>

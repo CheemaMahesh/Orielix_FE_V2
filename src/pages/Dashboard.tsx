@@ -593,7 +593,7 @@ export default function Dashboard() {
                   {/* Welcome Section */}
                   <div className="pt-8 px-8 text-center">
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                      Welcome {username || firstName || 'User'}
+                      Welcome {firstName || username || 'User'}
                     </h2>
 
                     {/* Points Box */}
