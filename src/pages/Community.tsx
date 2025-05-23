@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   X,
   HomeIcon as Home,
   CalendarIcon as Calendar,
@@ -14,6 +14,8 @@ import {
   LogOut
 } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -26,11 +28,10 @@ interface NavItemProps {
 
 const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
   <button
-    className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ease-in-out group relative overflow-hidden ${
-      active 
-        ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-[1.01]' 
-        : 'hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50/80 text-indigo-800 hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.005]'
-    }`}
+    className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ease-in-out group relative overflow-hidden ${active
+      ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-[1.01]'
+      : 'hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50/80 text-indigo-800 hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.005]'
+      }`}
     onClick={onClick}
   >
     {/* Background glow effect */}
@@ -40,7 +41,7 @@ const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
     {active && (
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 via-purple-400/20 to-indigo-400/20 opacity-30 blur-md"></div>
     )}
-    
+
     <div className={`relative z-10 ${active ? 'text-white' : 'text-indigo-600'} transition-all duration-200 ease-in-out ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
       {icon}
     </div>
@@ -57,7 +58,9 @@ export default function Community() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+  const userInfo = useSelector((state: RootState) => state.userSlice.user);
+
+
   useEffect(() => {
     const controlNavbar = () => {
       if (typeof window !== 'undefined') {
@@ -72,7 +75,7 @@ export default function Community() {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', controlNavbar);
-      
+
       // Cleanup function
       return () => {
         window.removeEventListener('scroll', controlNavbar);
@@ -80,18 +83,18 @@ export default function Community() {
     }
   }, [lastScrollY]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       {/* Sidebar */}
       <div className={`fixed inset-0 z-50 transition-all duration-300 ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         {/* Overlay */}
-        <div 
+        <div
           className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-500 ease-in-out"
           style={{ opacity: sidebarOpen ? 1 : 0 }}
           onClick={() => setSidebarOpen(false)}
         ></div>
-        
+
         {/* Sidebar */}
         <div className={`absolute left-0 top-0 h-full w-[300px] bg-gradient-to-b from-indigo-100/95 via-purple-50/90 to-indigo-100/95 shadow-2xl backdrop-blur-sm transform transition-all duration-500 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-indigo-200/30 rounded-r-3xl`}>
           {/* Decorative elements */}
@@ -100,17 +103,17 @@ export default function Community() {
             <div className="absolute h-60 w-60 bottom-20 -left-20 bg-indigo-300/30 rounded-full blur-3xl animate-pulse opacity-70"></div>
             <div className="absolute h-20 w-20 top-1/2 right-10 bg-purple-400/20 rounded-full blur-xl animate-pulse opacity-80"></div>
           </div>
-          
+
           <div className="p-5 flex justify-between items-center border-b border-indigo-200/50 relative z-10">
             <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Navigation</h3>
-            <button 
+            <button
               className="p-2 rounded-full bg-white/80 hover:bg-white text-indigo-500 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ease-out hover:scale-105 hover:rotate-90 group"
               onClick={() => setSidebarOpen(false)}
             >
               <X className="h-5 w-5 transition-all duration-300 ease-out group-hover:text-indigo-600" />
             </button>
           </div>
-          
+
           <div className="py-6 px-4 space-y-4 relative z-10">
             <div className="space-y-2.5">
               <NavItem icon={<Home className="h-5 w-5" />} text="Dashboard" onClick={() => {
@@ -148,14 +151,14 @@ export default function Community() {
           <div className="grid grid-cols-3 items-center h-full w-full">
             <div className="flex-shrink-0 pl-2 flex items-center h-full overflow-visible">
               <div className="cursor-pointer transition-all duration-300 flex items-center justify-center overflow-visible">
-                <img 
-                  src="/lovable-uploads/orielixlogo.png" 
-                  alt="Orielix Logo" 
+                <img
+                  src="/lovable-uploads/orielixlogo.png"
+                  alt="Orielix Logo"
                   className="h-[85px] -mt-2 transition-all duration-300 transform hover:scale-105"
                 />
               </div>
             </div>
-            
+
             {/* Center Navigation */}
             <div className="hidden md:flex justify-center items-center">
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-full p-1 shadow-sm border border-indigo-100">
@@ -177,7 +180,7 @@ export default function Community() {
             </div>
 
             <div className="hidden md:flex items-center justify-end flex-shrink-0 gap-2 lg:gap-4 mr-3 lg:mr-5">
-              <button 
+              <button
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-600 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200 relative"
                 onClick={() => navigate('/notifications')}
               >
@@ -188,23 +191,22 @@ export default function Community() {
                 </svg>
                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
               </button>
-              <div className="relative">
-                <button 
+              <div className="relative" onClick={() => navigate('/user-profile')}>
+                <button
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
-                  onClick={() => navigate('/user-profile')}
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                    <AvatarImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" />
+                    <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">John Doe</span>
+                  <span className="text-sm font-medium">{userInfo?.firstName || userInfo?.username || "User"}</span>
                 </button>
               </div>
             </div>
-            
+
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center justify-end col-span-2">
-              <button 
+              <button
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-600 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200 relative mr-2"
                 onClick={() => navigate('/notifications')}
               >
@@ -215,7 +217,7 @@ export default function Community() {
                 </svg>
                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
               </button>
-              <button 
+              <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-300 ease-out shadow-md hover:shadow-lg hover:scale-105 border border-indigo-100 hover:border-indigo-200"
               >
@@ -249,7 +251,7 @@ export default function Community() {
                 <p className="text-gray-600 max-w-md mb-6">
                   Our community page is under development. Soon you'll be able to connect with like-minded individuals, join groups, and participate in discussions.
                 </p>
-                <Button 
+                <Button
                   className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                   onClick={() => navigate('/dashboard')}
                 >

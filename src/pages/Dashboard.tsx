@@ -529,16 +529,15 @@ export default function Dashboard() {
                 </svg>
                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
               </button>
-              <div className="relative">
+              <div className="relative" onClick={() => navigate('/user-profile')}>
                 <button
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
-                  onClick={() => navigate('/user-profile')}
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                    <AvatarImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" />
+                    <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">John Doe</span>
+                  <span className="text-sm font-medium">{userInfo?.firstName || userInfo?.username || "User"}</span>
                 </button>
               </div>
             </div>

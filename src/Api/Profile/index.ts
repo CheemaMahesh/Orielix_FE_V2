@@ -18,6 +18,7 @@ type ProfileLoading = {
   intrestDelete: boolean;
   updateBio: boolean;
   updateNames: boolean;
+  loginWithGoogle: boolean;
 };
 
 export type MeResponse = {
@@ -30,6 +31,10 @@ export type EventResponse = {
   success: boolean;
   message: string;
   events: EventType[];
+};
+
+export type GoogleLogin = {
+  data: { success: boolean; message: string; token: string };
 };
 
 const token = localStorage.getItem("token");
@@ -48,6 +53,7 @@ export const useProfile = () => {
     intrestDelete: false,
     updateBio: false,
     updateNames: false,
+    loginWithGoogle: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -305,6 +311,25 @@ export const useProfile = () => {
     }
   };
 
+  const loginWithGoogle = async ({ email, firstName, profileImage }) => {
+    try {
+      handleLoading("loginWithGoogle", true);
+      const response: GoogleLogin = await axios.post(
+        `${config.apiUrl}/api/v1/user/google`,
+        {
+          email,
+          firstName,
+          profileImage,
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during Google Login:", err);
+    } finally {
+      handleLoading("loginWithGoogle", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -319,5 +344,6 @@ export const useProfile = () => {
     deleteIntrest,
     updateBio,
     updateNames,
+    loginWithGoogle,
   };
 };

@@ -368,7 +368,7 @@ export default function UserProfile() {
                     <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">John Doe</span>
+                  <span className="text-sm font-medium">{userInfo?.firstName || userInfo?.username || "User"}</span>
                 </button>
               </div>
             </div>

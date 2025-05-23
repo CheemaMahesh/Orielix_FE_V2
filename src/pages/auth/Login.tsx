@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { LoginResponse, useAuthenticateUser } from "@/Api/Hooks/useAuth";
+import { useGoogleAuth } from "@/Api/Profile/useGoogleAuth";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuthenticateUser } from "@/Api/Hooks/useAuth";
-import { LoginResponse } from "@/Api/Hooks/useAuth";
+import { GoogleLogin } from "@react-oauth/google";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 
 type LoginTypes = {
@@ -16,14 +17,13 @@ type LoginTypes = {
 }
 
 const Login = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { login, isLoading } = useAuthenticateUser();
   const [userData, setUserData] = useState<LoginTypes>({
     email: "",
     password: "",
   });
-
+  const { handleGoogleLoginSuccess, isGoogleLoading } = useGoogleAuth();
 
   const handleChangeDetails = (type: string, value: string) => {
     setUserData((prevState) => ({
@@ -128,17 +128,26 @@ const Login = () => {
                 <span className="bg-white px-2 text-gray-500">Or continue with</span>
               </div>
             </div>
-
-            <Button
-              variant="outline"
-              // onClick={handleGoogleLogin}
-              className="w-full h-10 py-5 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium flex items-center justify-center gap-2 text-sm"
-            >
-              <svg className="h-4 w-4" aria-hidden="true" focusable="false" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-              </svg>
-              <span>Google</span>
-            </Button>
+            <div style={{ width: "100%" }}>
+              {isGoogleLoading ? <Button
+                isLoading={isGoogleLoading}
+                variant="outline"
+                className="w-full h-10 py-5 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium flex items-center justify-center gap-2 text-sm"
+              >
+                <svg className="h-4 w-4" aria-hidden="true" focusable="false" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                  <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                </svg>
+                <span>Google</span>
+              </Button> :
+                <GoogleLogin
+                  width={365}
+                  onSuccess={(e) => handleGoogleLoginSuccess(e)}
+                  onError={() => console.error("Error while login")}
+                  size="large"
+                  logo_alignment="center"
+                />
+              }
+            </div>
           </CardContent>
           <CardFooter className="flex items-center justify-center p-4 pt-0">
             <p className="text-center text-xs text-gray-600">
