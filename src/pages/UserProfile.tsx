@@ -13,8 +13,11 @@ import {
   CalendarIcon as Calendar,
   Camera,
   Edit as EditIcon,
+  Github,
+  Globe,
   Heart,
   HomeIcon as Home,
+  Linkedin,
   LogOut,
   Mail,
   Pencil,
@@ -25,11 +28,13 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useProfile } from "@/Api/Profile";
 import { useCallProfileInfo } from "@/hooks/Profile";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Input } from "@/components/ui/input";
+import defaultProfle from "../Icons/defaultprofile.svg"
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -44,6 +49,9 @@ type ProfileInfotype = {
   lastName?: string;
   email?: string;
   username?: string;
+  linkedinLink?: string;
+  githubLink?: string;
+  portfolioLink?: string;
 }
 
 
@@ -109,7 +117,7 @@ export default function UserProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames } = useProfile();
+  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames, updateSocialLinks } = useProfile();
   const { getMeByToken } = useCallProfileInfo();
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
@@ -134,7 +142,12 @@ export default function UserProfile() {
     lastName: userInfo?.lastName || "",
     username: userInfo?.username || "",
     email: userInfo?.email || "",
+    linkedinLink: userInfo?.linkedinLink || "",
+    githubLink: userInfo?.githubLink || "",
+    portfolioLink: userInfo?.portfolioLink || "",
   });
+
+  const [isEditSocial, setIsEditSocial] = useState<boolean>(false);
 
   // Toggle edit mode
   const toggleEditMode = () => {
@@ -218,12 +231,27 @@ export default function UserProfile() {
     }))
   }
 
+  const updateSocialLinksByToken = async () => {
+    const res = await updateSocialLinks({
+      linkedinLink: profileInfo?.linkedinLink,
+      githubLink: profileInfo?.githubLink,
+      portfolioLink: profileInfo?.portfolioLink,
+    });
+    if (res?.success) {
+      getMeByToken();
+      setIsEditSocial(false);
+    }
+  }
+
   useEffect(() => {
     setProfileInfo({
       firstName: userInfo?.firstName || "",
       lastName: userInfo?.lastName || "",
       username: userInfo?.username || "",
       email: userInfo?.email || "",
+      linkedinLink: userInfo?.linkedinLink || "",
+      githubLink: userInfo?.githubLink || "",
+      portfolioLink: userInfo?.portfolioLink || "",
     })
   }, [userInfo]);
 
@@ -365,8 +393,8 @@ export default function UserProfile() {
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                    <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarImage src={userInfo?.profileImage || defaultProfle} alt="User" />
+                    <AvatarFallback>User</AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">{userInfo?.firstName || userInfo?.username || "User"}</span>
                 </button>
@@ -443,7 +471,7 @@ export default function UserProfile() {
                 <div className="relative rounded-full p-1 bg-white shadow-xl">
                   <div className="relative group overflow-hidden rounded-full">
                     <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white">
-                      <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" className="object-cover" />
+                      <AvatarImage src={userInfo?.profileImage || defaultProfle} alt="User" className="object-cover" />
                       <AvatarFallback className="text-3xl md:text-4xl">JD</AvatarFallback>
                     </Avatar>
                     {editMode && (
@@ -675,82 +703,87 @@ export default function UserProfile() {
           </motion.div>
 
           {/* Social Links Section */}
-          {/* <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mb-8 md:mb-12"
           >
+
             <div className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-md shadow-xl border border-indigo-100/50">
               <div className="p-4 md:p-8">
-                <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-                  <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
-                    <Link className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" />
+                <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
+                      <Link className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" to={""} />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-indigo-800">Social Links</h2>
                   </div>
-                  <h2 className="text-lg md:text-xl font-bold text-indigo-800">Social Links</h2>
+                  {!isEditSocial && <div onClick={() => setIsEditSocial(true)} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} />Edit</div>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${editMode ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditSocial ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
                     <div className="p-2 rounded-full bg-indigo-100 text-indigo-600">
                       <Globe className="h-4 w-4 md:h-5 md:w-5" />
                     </div>
-                    {editMode ? (
+                    {isEditSocial ? (
                       <Input
-                        value={userData.portfolio}
-                        onChange={(e) => handleInputChange(e, 'portfolio')}
+                        value={profileInfo?.portfolioLink}
+                        onChange={(e) => handleSetProfileInfor('portfolioLink', e.target.value)}
                         className="flex-1 border-indigo-200 bg-white"
                         placeholder="Portfolio URL"
                       />
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">Portfolio</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userData.portfolio}</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.portfolioLink}</p>
                       </div>
                     )}
                   </div>
 
-                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${editMode ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditSocial ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
                     <div className="p-2 rounded-full bg-indigo-100 text-indigo-600">
                       <Linkedin className="h-4 w-4 md:h-5 md:w-5" />
                     </div>
-                    {editMode ? (
+                    {isEditSocial ? (
                       <Input
-                        value={userData.linkedin}
-                        onChange={(e) => handleInputChange(e, 'linkedin')}
+                        value={profileInfo?.linkedinLink}
+                        onChange={(e) => handleSetProfileInfor('linkedinLink', e.target.value)}
                         className="flex-1 border-indigo-200 bg-white"
                         placeholder="LinkedIn Username"
                       />
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">LinkedIn</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userData.linkedin}</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.linkedinLink}</p>
                       </div>
                     )}
                   </div>
 
-                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${editMode ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditSocial ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
                     <div className="p-2 rounded-full bg-indigo-100 text-indigo-600">
                       <Github className="h-4 w-4 md:h-5 md:w-5" />
                     </div>
-                    {editMode ? (
+                    {isEditSocial ? (
                       <Input
-                        value={userData.github}
-                        onChange={(e) => handleInputChange(e, 'github')}
+                        value={profileInfo?.githubLink}
+                        onChange={(e) => handleSetProfileInfor('githubLink', e.target.value)}
                         className="flex-1 border-indigo-200 bg-white"
                         placeholder="GitHub Username"
                       />
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">GitHub</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userData.github}</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.githubLink}</p>
                       </div>
                     )}
                   </div>
                 </div>
+                {isEditSocial && <div className="w-full flex justify-end py-2 p-x1 gap-3"><Button variant="outline" onClick={() => setIsEditSocial(false)}>Cancel</Button><Button onClick={updateSocialLinksByToken} isLoading={isLoading.updateSocialLinks}>Save</Button></div>}
               </div>
             </div>
-          </motion.div> */}
+          </motion.div>
           <Button onClick={handleLogout} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
           >Logout</Button>
         </div>

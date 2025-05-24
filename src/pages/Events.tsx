@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { LeaveEvent } from "@/components/Modals/LeaveEvent";
 import { Session } from "@/components/Skeliton/Session";
+import defaultProfle from "../Icons/defaultprofile.svg"
 
 // Define the Event type based on the eventData structure
 interface Presenter {
@@ -247,7 +248,7 @@ export default function Events() {
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                    <AvatarImage src={userInfo?.profileImage || "https://randomuser.me/api/portraits/men/32.jpg"} alt="User" />
+                    <AvatarImage src={userInfo?.profileImage || defaultProfle} alt="User" className="object-cover" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">{userInfo?.firstName || userInfo?.username || "User"}</span>

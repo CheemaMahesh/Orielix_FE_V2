@@ -19,6 +19,7 @@ type ProfileLoading = {
   updateBio: boolean;
   updateNames: boolean;
   loginWithGoogle: boolean;
+  updateSocialLinks: boolean;
 };
 
 export type MeResponse = {
@@ -54,6 +55,7 @@ export const useProfile = () => {
     updateBio: false,
     updateNames: false,
     loginWithGoogle: false,
+    updateSocialLinks: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -330,6 +332,34 @@ export const useProfile = () => {
     }
   };
 
+  const updateSocialLinks = async ({
+    portfolioLink,
+    githubLink,
+    linkedinLink,
+  }: {
+    portfolioLink: string;
+    githubLink: string;
+    linkedinLink: string;
+  }) => {
+    try {
+      handleLoading("updateSocialLinks", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/update/social`,
+        { portfolioLink, githubLink, linkedinLink },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateSocialLinks:", err);
+    } finally {
+      handleLoading("updateSocialLinks", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -345,5 +375,6 @@ export const useProfile = () => {
     updateBio,
     updateNames,
     loginWithGoogle,
+    updateSocialLinks,
   };
 };

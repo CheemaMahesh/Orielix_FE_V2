@@ -26,6 +26,13 @@ export interface UserResponse {
     isActive: boolean;
     isDeleted: boolean;
     username: string | null;
+    portfolioLink: string | null;
+    githubLink: string | null;
+    linkedinLink: string | null;
+    twitterLink: string | null;
+    facebookLink: string | null;
+    instagramLink: string | null;
+    youtubeLink: string | null;
   };
 }
 
