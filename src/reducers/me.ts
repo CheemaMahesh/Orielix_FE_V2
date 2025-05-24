@@ -33,6 +33,7 @@ export interface UserResponse {
     facebookLink: string | null;
     instagramLink: string | null;
     youtubeLink: string | null;
+    phone: string | null;
   };
 }
 

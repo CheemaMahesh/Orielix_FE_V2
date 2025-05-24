@@ -27,6 +27,7 @@ export interface AllUserResponse {
     isActive: boolean;
     isDeleted: boolean;
     username: string | null;
+    phone: string | null;
   }[];
 }
 
@@ -57,6 +58,7 @@ const initialState: AllUserResponse = {
       isActive: false,
       isDeleted: false,
       username: null,
+      phone: null,
     },
   ],
 };

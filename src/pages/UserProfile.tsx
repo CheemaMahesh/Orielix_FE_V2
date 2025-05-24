@@ -35,6 +35,10 @@ import { useCallProfileInfo } from "@/hooks/Profile";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { Input } from "@/components/ui/input";
 import defaultProfle from "../Icons/defaultprofile.svg"
+import { DatePicker, InputNumber } from "antd";
+import { UserResponse } from "@/reducers/me";
+import dayjs from "dayjs";
+import { ConfirmLogoutModal } from "@/components/Modals/Auth/LogoutConfirm";
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -43,34 +47,6 @@ interface StatCardProps {
   label: string;
   color: string;
 }
-
-type ProfileInfotype = {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  username?: string;
-  linkedinLink?: string;
-  githubLink?: string;
-  portfolioLink?: string;
-}
-
-
-const StatCard = ({ icon, value, label, color }: StatCardProps) => (
-  <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-    <div className={`p-3 rounded-full ${color} mb-2 text-white`}>
-      {icon}
-    </div>
-    <div className="text-2xl font-bold">{value.toLocaleString()}</div>
-    <div className="text-sm opacity-80">{label}</div>
-  </div>
-);
-
-// InterestTag component for user interests
-interface InterestTagProps {
-  text: string;
-  onClick?: () => void;
-}
-
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -117,7 +93,7 @@ export default function UserProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames, updateSocialLinks } = useProfile();
+  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames, updateSocialLinks, onboardingFirstStep, updateEducation } = useProfile();
   const { getMeByToken } = useCallProfileInfo();
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
@@ -137,7 +113,7 @@ export default function UserProfile() {
 
   const [about, setAbout] = useState<string>(userInfo?.about || "");
   const [isOpenAboutEdit, setIsOpenAboutEdit] = useState<boolean>(false);
-  const [profileInfo, setProfileInfo] = useState<ProfileInfotype | null>({
+  const [profileInfo, setProfileInfo] = useState<Partial<UserResponse["user"]>>({
     firstName: userInfo?.firstName || "",
     lastName: userInfo?.lastName || "",
     username: userInfo?.username || "",
@@ -145,9 +121,17 @@ export default function UserProfile() {
     linkedinLink: userInfo?.linkedinLink || "",
     githubLink: userInfo?.githubLink || "",
     portfolioLink: userInfo?.portfolioLink || "",
+    dob: userInfo?.dob || "",
+    phone: userInfo?.phone || "",
+    fieldDescription: userInfo?.fieldDescription || "",
+    fieldOfStudy: userInfo?.fieldOfStudy || "",
+    institution: userInfo?.institution || "",
   });
 
   const [isEditSocial, setIsEditSocial] = useState<boolean>(false);
+  const [isEditOneOnBoarding, setIsEditOpenOneBoarding] = useState<boolean>(false);
+  const [isEditEducation, setIsEditEducation] = useState<boolean>(false);
+  const [openLogout, setOpenLogout] = useState<boolean>(false);
 
   // Toggle edit mode
   const toggleEditMode = () => {
@@ -160,13 +144,6 @@ export default function UserProfile() {
     setEditMode(false);
     // Show success message or notification
   };
-
-  const handleLogout = () => {
-    dispatch(clearUser());
-    dispatch(clearSessions());
-    localStorage.removeItem("token");
-    navigate("/login");
-  }
 
   const handleAddSelectIntrest = (intrest: IntrestType) => {
     if (selectedIntrests?.some((item) => item.id === intrest.id)) {
@@ -243,6 +220,31 @@ export default function UserProfile() {
     }
   }
 
+  const onboardingFirstStepByToken = async () => {
+    const res = await onboardingFirstStep({
+      firstName: profileInfo.firstName,
+      lastName: profileInfo.lastName,
+      dob: dayjs(profileInfo.dob).format("YYYY-MM-DD"),
+      phone: profileInfo.phone,
+    });
+    if (res?.success) {
+      getMeByToken();
+      setIsEditOpenOneBoarding(false);
+    }
+  }
+
+  const updateEducationByToken = async () => {
+    const res = await updateEducation({
+      fieldOfStudy: profileInfo.fieldOfStudy,
+      fieldDescription: profileInfo.fieldDescription,
+      institution: profileInfo.institution,
+    });
+    if (res?.success) {
+      getMeByToken();
+      setIsEditEducation(false);
+    }
+  }
+
   useEffect(() => {
     setProfileInfo({
       firstName: userInfo?.firstName || "",
@@ -252,6 +254,11 @@ export default function UserProfile() {
       linkedinLink: userInfo?.linkedinLink || "",
       githubLink: userInfo?.githubLink || "",
       portfolioLink: userInfo?.portfolioLink || "",
+      dob: userInfo?.dob || "",
+      phone: userInfo?.phone || "",
+      fieldOfStudy: userInfo?.fieldOfStudy || "",
+      fieldDescription: userInfo?.fieldDescription || "",
+      institution: userInfo?.institution || "",
     })
   }, [userInfo]);
 
@@ -784,7 +791,174 @@ export default function UserProfile() {
               </div>
             </div>
           </motion.div>
-          <Button onClick={handleLogout} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
+
+          {/* Onboarding step 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mb-8 md:mb-12"
+          >
+
+            <div className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-md shadow-xl border border-indigo-100/50">
+              <div className="p-4 md:p-8">
+                <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
+                      <Link className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" to={""} />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-indigo-800">Personal Information</h2>
+                  </div>
+                  {!isEditOneOnBoarding && <div onClick={() => setIsEditOpenOneBoarding(true)} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} />Edit</div>}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditOneOnBoarding ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditOneOnBoarding ? (
+                      <Input
+                        value={profileInfo?.firstName}
+                        onChange={(e) => handleSetProfileInfor('firstName', e.target.value)}
+                        className="flex-1 border-indigo-200 bg-white"
+                        placeholder="First Name"
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">First Name</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.firstName}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditOneOnBoarding ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditOneOnBoarding ? (
+                      <Input
+                        value={profileInfo?.lastName}
+                        onChange={(e) => handleSetProfileInfor('lastName', e.target.value)}
+                        className="flex-1 border-indigo-200 bg-white"
+                        placeholder="Last Name"
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Last Name</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.lastName}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditOneOnBoarding ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditOneOnBoarding ? (
+                      <DatePicker
+                        format="MMM DD, YYYY"
+                        className="w-full"
+                        placeholder="Date of Birth"
+                        disabledDate={(current) => current && current.isAfter(dayjs())}
+                        value={dayjs(profileInfo?.dob)}
+                        onChange={(date => handleSetProfileInfor('dob', date?.format('YYYY-MM-DD')))}
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Date of Birth</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{dayjs(userInfo?.dob).format("MMM DD, YYYY")}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditOneOnBoarding ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditOneOnBoarding ? (
+                      <InputNumber
+                        className="w-full"
+                        placeholder="Phone Number"
+                        min={5000000000}
+                        max={9999999999}
+                        value={Number(profileInfo?.phone)}
+                        onChange={(value) => handleSetProfileInfor('phone', String(value))}
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Phone no</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.phone}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {isEditOneOnBoarding && <div className="w-full flex justify-end py-2 p-x1 gap-3"><Button variant="outline" onClick={() => setIsEditOpenOneBoarding(false)}>Cancel</Button><Button onClick={onboardingFirstStepByToken} isLoading={isLoading.onboardingFirstStep}>Save</Button></div>}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Education */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mb-8 md:mb-12"
+          >
+
+            <div className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-md shadow-xl border border-indigo-100/50">
+              <div className="p-4 md:p-8">
+                <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
+                      <Link className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" to={""} />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-indigo-800">Education</h2>
+                  </div>
+                  {!isEditEducation && <div onClick={() => setIsEditEducation(true)} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} />Edit</div>}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditEducation ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditEducation ? (
+                      <Input
+                        value={profileInfo?.institution}
+                        onChange={(e) => handleSetProfileInfor('institution', e.target.value)}
+                        className="flex-1 border-indigo-200 bg-white"
+                        placeholder="Institution"
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Institution</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.institution}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditEducation ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditEducation ? (
+                      <Input
+                        value={profileInfo?.fieldOfStudy}
+                        onChange={(e) => handleSetProfileInfor('fieldOfStudy', e.target.value)}
+                        className="flex-1 border-indigo-200 bg-white"
+                        placeholder="Field Of Study"
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Field Of Study</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.fieldOfStudy}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditEducation ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditEducation ? (
+                      <Textarea
+                        placeholder="Describes your role"
+                        onChange={(e) => handleSetProfileInfor('fieldDescription', e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Role Description</p>
+                        <p className="text-lg leading-relaxed text-gray-700 line-clamp-4">{userInfo?.fieldDescription}</p>
+                      </div>
+
+                    )}
+                  </div>
+                </div>
+                {isEditEducation && <div className="w-full flex justify-end py-2 p-x1 gap-3"><Button variant="outline" onClick={() => setIsEditEducation(false)}>Cancel</Button><Button onClick={updateEducationByToken} isLoading={isLoading.updateEducation}>Save</Button></div>}
+              </div>
+            </div>
+          </motion.div>
+          {openLogout && <ConfirmLogoutModal open={openLogout} onOpenChange={setOpenLogout} />}
+          <Button onClick={() => setOpenLogout(true)} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
           >Logout</Button>
         </div>
       </main >

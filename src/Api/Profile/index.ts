@@ -20,6 +20,8 @@ type ProfileLoading = {
   updateNames: boolean;
   loginWithGoogle: boolean;
   updateSocialLinks: boolean;
+  onboardingFirstStep: boolean;
+  updateEducation: boolean;
 };
 
 export type MeResponse = {
@@ -36,6 +38,13 @@ export type EventResponse = {
 
 export type GoogleLogin = {
   data: { success: boolean; message: string; token: string };
+};
+
+export type OnboardingFirstStep = {
+  firstName: string;
+  lastName: string;
+  dob: string;
+  phone: string;
 };
 
 const token = localStorage.getItem("token");
@@ -56,6 +65,8 @@ export const useProfile = () => {
     updateNames: false,
     loginWithGoogle: false,
     updateSocialLinks: false,
+    onboardingFirstStep: false,
+    updateEducation: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -360,6 +371,46 @@ export const useProfile = () => {
     }
   };
 
+  const onboardingFirstStep = async (data: OnboardingFirstStep) => {
+    try {
+      handleLoading("onboardingFirstStep", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/firststep`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during onboardingFirstStep:", err);
+    } finally {
+      handleLoading("onboardingFirstStep", false);
+    }
+  };
+
+  const updateEducation = async (data) => {
+    try {
+      handleLoading("updateEducation", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/education`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateEducation:", err);
+    } finally {
+      handleLoading("updateEducation", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -376,5 +427,7 @@ export const useProfile = () => {
     updateNames,
     loginWithGoogle,
     updateSocialLinks,
+    onboardingFirstStep,
+    updateEducation,
   };
 };

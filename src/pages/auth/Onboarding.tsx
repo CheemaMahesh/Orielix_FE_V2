@@ -86,12 +86,12 @@ interface CountryCodeDropdownProps {
 
 const CountryCodeDropdown = ({ selectedCode, setSelectedCode, disabled = false }: CountryCodeDropdownProps) => {
   const selectedCountry = countryCodes.find(country => country.code === selectedCode) || countryCodes[0];
-  
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className={`h-12 px-3 flex items-center justify-center rounded-l-xl rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 transition-all duration-300 ${disabled ? 'border-purple-500 bg-purple-50/70 border-r-0' : 'border-gray-200'}`}
           disabled={disabled}
         >
@@ -107,9 +107,8 @@ const CountryCodeDropdown = ({ selectedCode, setSelectedCode, disabled = false }
           {countryCodes.map((country) => (
             <div
               key={country.code}
-              className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 ${
-                country.code === selectedCode ? "bg-purple-100" : ""
-              }`}
+              className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 ${country.code === selectedCode ? "bg-purple-100" : ""
+                }`}
               onClick={() => setSelectedCode(country.code)}
             >
               <span className="text-lg">{country.flag}</span>
@@ -161,13 +160,13 @@ const Onboarding = () => {
   // Step 2: Profile Information
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [bio, setBio] = useState("");
-  
+
   // Step 3: Education and Work
   const [institution, setInstitution] = useState("");
   const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [role, setRole] = useState("");
   const [otherRole, setOtherRole] = useState("");
-  
+
   // Prevent scrolling when selecting role
   const handleRoleSelect = (selectedRole: string) => {
     // Prevent default scrolling behavior
@@ -190,7 +189,7 @@ const Onboarding = () => {
   const handleNext = () => {
     // Reset previous errors
     setErrors({});
-    
+
     // Validate required fields based on current step
     if (step === 1) {
       const newErrors: {
@@ -199,23 +198,23 @@ const Onboarding = () => {
         dob?: string;
         phoneNumber?: string;
       } = {};
-      
+
       if (!firstName.trim()) {
         newErrors.firstName = "First name is required";
       }
-      
+
       if (!lastName.trim()) {
         newErrors.lastName = "Last name is required";
       }
-      
+
       if (!dob) {
         newErrors.dob = "Date of birth is required";
       }
-      
+
       if (!phoneVerified) {
         newErrors.phoneNumber = "Phone verification is required";
       }
-      
+
       // If there are validation errors, show toast and return
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -230,11 +229,11 @@ const Onboarding = () => {
       const newErrors: {
         bio?: string;
       } = {};
-      
+
       if (!bio.trim()) {
         newErrors.bio = "Please tell us about yourself";
       }
-      
+
       // If there are validation errors, show toast and return
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -249,11 +248,11 @@ const Onboarding = () => {
       const newErrors: {
         institution?: string;
       } = {};
-      
+
       if (!institution.trim()) {
         newErrors.institution = "Institution is required";
       }
-      
+
       // If there are validation errors, show toast and return
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -275,7 +274,7 @@ const Onboarding = () => {
         return;
       }
     }
-    
+
     // If validation passes or we're on a different step, proceed
     if (step < totalSteps) {
       setStep(step + 1);
@@ -298,11 +297,11 @@ const Onboarding = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    
+
     // Here you would typically send the onboarding data to your backend
     // Data would include: firstName, lastName, dob, phoneNumber, countryCode, 
     // profilePicture, bio, institution, fieldOfStudy, role, interests, notifications
-    
+
     // For demo, just simulate a loading state
     setTimeout(() => {
       setIsLoading(false);
@@ -347,12 +346,12 @@ const Onboarding = () => {
     if (value.length > 1) {
       value = value.charAt(0);
     }
-    
+
     const newInputs = [...verificationInputs];
     newInputs[index] = value;
     setVerificationInputs(newInputs);
     setVerificationCode(newInputs.join(""));
-    
+
     // Auto focus to next input
     if (value !== "" && index < 3) {
       const nextInput = document.getElementById(`phone-verification-${index + 1}`) as HTMLInputElement | null;
@@ -361,7 +360,7 @@ const Onboarding = () => {
       }
     }
   };
-  
+
   // Handle backspace to go to previous verification input with proper types
   const handleVerificationKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && index > 0 && verificationInputs[index] === "") {
@@ -371,12 +370,12 @@ const Onboarding = () => {
       }
     }
   };
-  
+
   // Send verification code to phone
   const handleSendVerificationCode = () => {
     // Clear any previous verification error
     setVerificationError("");
-    
+
     // Validate phone number
     if (!phoneNumber || phoneNumber.length < 6) {
       toast({
@@ -386,21 +385,21 @@ const Onboarding = () => {
       });
       return;
     }
-    
+
     setIsVerifying(true);
     setShowVerificationInput(true);
-    
+
     // Reset verification inputs if resending
     setVerificationInputs(["", "", "", ""]);
     setVerificationCode("");
-    
+
     // Here you would call an API to send verification code
     // For demo, just simulate sending
-    
+
     setTimeout(() => {
       setIsVerifying(false);
       setPhoneVerificationCountdown(30); // Reduced to 30 seconds for better UX
-      
+
       // Start countdown
       const interval = setInterval(() => {
         setPhoneVerificationCountdown(prev => {
@@ -411,37 +410,36 @@ const Onboarding = () => {
           return prev - 1;
         });
       }, 1000);
-      
+
       toast({
         title: "Verification code sent",
         description: `A 4-digit code has been sent to ${countryCode} ${phoneNumber}`,
       });
     }, 1000);
   };
-  
-  // Verify phone number with entered code
+
   const handleVerifyPhone = () => {
     // Clear any previous verification error
     setVerificationError("");
-    
+
     if (verificationCode.length !== 4) {
       setVerificationError("Please enter the complete 4-digit code");
       return;
     }
-    
+
     setIsVerifying(true);
-    
+
     // Here you would call an API to verify the code
     // For demo purposes, we'll use "1234" as the valid code
-    
+
     setTimeout(() => {
       setIsVerifying(false);
-      
+
       // For demo, check if code is "1234"
       if (verificationCode === "1234") {
         setPhoneVerified(true);
         setShowVerificationInput(false);
-        
+
         toast({
           title: "Phone verified",
           description: "Your phone number has been verified successfully",
@@ -450,14 +448,14 @@ const Onboarding = () => {
         // Increment attempt counter
         const newAttempts = verificationAttempts + 1;
         setVerificationAttempts(newAttempts);
-        
+
         // Show error message
         setVerificationError("Invalid code. Please try again.");
-        
+
         // Reset verification inputs
         setVerificationInputs(["", "", "", ""]);
         setVerificationCode("");
-        
+
         // Focus on first input
         setTimeout(() => {
           const firstInput = document.getElementById("phone-verification-0") as HTMLInputElement | null;
@@ -465,12 +463,12 @@ const Onboarding = () => {
             firstInput.focus();
           }
         }, 100);
-        
+
         // If too many attempts, lock verification
         if (newAttempts >= 3) {
           setVerificationError("Too many failed attempts. Please try again later.");
           setPhoneVerificationCountdown(60);
-          
+
           // Start countdown
           const interval = setInterval(() => {
             setPhoneVerificationCountdown(prev => {
@@ -503,7 +501,7 @@ const Onboarding = () => {
               <CardTitle className="text-2xl font-bold tracking-tight">Complete your profile</CardTitle>
               <CardDescription className="text-gray-500">
               </CardDescription>
-              
+
               <div className="border-t border-gray-200 my-6 sm:my-8 pt-6 sm:pt-8 w-full">
                 <div className="relative">
                   <Progress value={(step / totalSteps) * 100} className="h-3 bg-gray-100 rounded-full overflow-hidden" />
@@ -515,15 +513,14 @@ const Onboarding = () => {
                   </div>
                   <div className="absolute top-0 left-0 w-full h-full flex justify-between px-0">
                     {Array.from({ length: totalSteps }).map((_, index) => (
-                      <div 
-                        key={index} 
-                        className={`w-6 h-6 rounded-full -mt-1.5 flex items-center justify-center transition-all duration-300 ${
-                          step > index 
-                            ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md" 
-                            : step === index + 1 
-                              ? "border-2 border-purple-600 bg-white" 
-                              : "border-2 border-gray-200 bg-white"
-                        }`}
+                      <div
+                        key={index}
+                        className={`w-6 h-6 rounded-full -mt-1.5 flex items-center justify-center transition-all duration-300 ${step > index
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md"
+                          : step === index + 1
+                            ? "border-2 border-purple-600 bg-white"
+                            : "border-2 border-gray-200 bg-white"
+                          }`}
                       >
                         {step > index ? (
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -587,7 +584,7 @@ const Onboarding = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="dob" className="flex items-center text-sm sm:text-base">
                       Date of Birth <span className="text-red-500 ml-1">*</span>
@@ -610,8 +607,8 @@ const Onboarding = () => {
                         <div className="p-3 border-b">
                           <div className="flex items-center justify-between">
                             <Label htmlFor="year-select" className="text-sm font-medium">Year:</Label>
-                            <Select 
-                              value={selectedYear.toString()} 
+                            <Select
+                              value={selectedYear.toString()}
                               onValueChange={(value) => handleYearChange(parseInt(value))}
                             >
                               <SelectTrigger id="year-select" className="w-[120px] h-8">
@@ -645,7 +642,7 @@ const Onboarding = () => {
                       </p>
                     )}
                   </div>
-                  
+
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="phoneNumber" className="flex items-center text-sm sm:text-base">
                       Phone Number <span className="text-red-500 ml-1">*</span>
@@ -667,9 +664,8 @@ const Onboarding = () => {
                               {countryCodes.map((country) => (
                                 <div
                                   key={country.code}
-                                  className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 ${
-                                    country.code === countryCode ? "bg-purple-100" : ""
-                                  }`}
+                                  className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 ${country.code === countryCode ? "bg-purple-100" : ""
+                                    }`}
                                   onClick={() => setCountryCode(country.code)}
                                 >
                                   <span className="text-lg">{country.flag}</span>
@@ -704,7 +700,7 @@ const Onboarding = () => {
                         </Button>
                       )}
                     </div>
-                    
+
                     {errors.phoneNumber && (
                       <p className="text-red-500 text-xs flex items-center mt-1">
                         <AlertCircle className="h-3 w-3 mr-1" />
@@ -730,7 +726,7 @@ const Onboarding = () => {
                             {phoneVerificationCountdown > 0 ? null : "Resend"}
                           </Button>
                         </div>
-                        
+
                         <div className="flex items-center gap-1 sm:gap-2">
                           <div className="flex gap-1 flex-1">
                             {verificationInputs.map((input, index) => (
@@ -760,14 +756,14 @@ const Onboarding = () => {
                             )}
                           </Button>
                         </div>
-                        
+
                         {verificationError && (
                           <p className="text-red-500 text-xs flex items-center mt-1">
                             <AlertCircle className="h-3 w-3 mr-1" />
                             {verificationError}
                           </p>
                         )}
-                        
+
                         {phoneVerificationCountdown > 0 && verificationAttempts >= 3 && (
                           <p className="text-xs text-center text-gray-500 mt-1">
                             Try again in {phoneVerificationCountdown}s
@@ -775,7 +771,7 @@ const Onboarding = () => {
                         )}
                       </div>
                     )}
-                    
+
                     {phoneVerified && (
                       <div className="mt-1 flex items-center text-green-600 text-xs">
                         <CheckCircle className="h-3 w-3 mr-1" />
@@ -791,9 +787,9 @@ const Onboarding = () => {
                   <div className="flex flex-col items-center space-y-4">
                     <div className="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                       {profilePicture ? (
-                        <img 
-                          src={URL.createObjectURL(profilePicture)} 
-                          alt="Profile preview" 
+                        <img
+                          src={URL.createObjectURL(profilePicture)}
+                          alt="Profile preview"
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -806,16 +802,16 @@ const Onboarding = () => {
                       <Label htmlFor="photo" className="cursor-pointer inline-block px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
                         Upload profile picture
                       </Label>
-                      <Input 
-                        id="photo" 
-                        type="file" 
+                      <Input
+                        id="photo"
+                        type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                         className="hidden"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="bio" className="flex items-center">
                       Tell us about yourself <span className="text-red-500 ml-1">*</span>
@@ -861,7 +857,7 @@ const Onboarding = () => {
                         </p>
                       )}
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="fieldOfStudy" className="mb-1 sm:mb-2 block text-sm sm:text-base">Field of Study</Label>
                       <Input
@@ -872,13 +868,13 @@ const Onboarding = () => {
                         className="h-10 sm:h-12 px-3 sm:px-4 text-sm sm:text-base rounded-xl"
                       />
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                         <div className="h-6 sm:h-8 w-1 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
                         <Label className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">What best describes your role?</Label>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 mb-2">
                         {["Student", "Entrepreneur", "Developer", "Designer", "Marketer", "Other"].map((roleOption) => {
                           const isSelected = role === roleOption.toLowerCase();
@@ -894,8 +890,8 @@ const Onboarding = () => {
                               className={`
                                 relative overflow-hidden group transition-all duration-300 
                                 rounded-xl sm:rounded-2xl h-auto py-2 sm:py-3 px-2 sm:px-4 z-10 text-xs sm:text-sm
-                                ${isSelected 
-                                  ? "bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700 border-0" 
+                                ${isSelected
+                                  ? "bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700 border-0"
                                   : "border border-indigo-100"}
                               `}
                             >
@@ -909,7 +905,7 @@ const Onboarding = () => {
                           );
                         })}
                       </div>
-                      
+
                       {role === "other" && (
                         <div className="mt-3">
                           <Input
@@ -945,12 +941,12 @@ const Onboarding = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 relative">
                       {/* Simple decorative elements */}
                       <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-300/10 rounded-full blur-3xl z-0 hidden sm:block"></div>
                       <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-300/10 rounded-full blur-3xl z-0 hidden sm:block"></div>
-                      
+
                       {["Technology", "Startup", "Graphic Design", "UI/UX", "Editing", "Content Writing", "Game Development", "Marketing", "Animation"].map((interest) => {
                         const isSelected = interests.includes(interest);
                         return (
@@ -962,14 +958,14 @@ const Onboarding = () => {
                             className={`
                               relative overflow-hidden group transition-all duration-300 
                               rounded-xl sm:rounded-2xl h-auto py-3 sm:py-5 px-2 sm:px-4 z-10 text-xs sm:text-sm
-                              ${isSelected 
-                                ? "bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700 border-0" 
+                              ${isSelected
+                                ? "bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700 border-0"
                                 : "border border-indigo-100"}
                             `}
                           >
                             {/* Subtle hover effect element */}
                             <div className="absolute inset-0 w-full h-full bg-white/0 group-hover:bg-white/10 transition-colors duration-300 rounded-xl sm:rounded-2xl"></div>
-                            
+
                             <span className={`
                               relative z-10 font-medium
                               ${isSelected ? "text-white" : "text-gray-700"}
