@@ -34,6 +34,10 @@ export interface UserResponse {
     instagramLink: string | null;
     youtubeLink: string | null;
     phone: string | null;
+    country: string | null;
+    zipCode: string | null;
+    state: string | null;
+    city: string | null;
   };
 }
 

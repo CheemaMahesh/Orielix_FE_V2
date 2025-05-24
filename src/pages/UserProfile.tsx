@@ -3,8 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { IntrestType } from "@/reducers/Intrests";
-import { clearUser } from "@/reducers/me";
-import { clearSessions } from "@/reducers/sessions";
 import { RootState } from "@/store";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -27,18 +25,21 @@ import {
   X
 } from 'lucide-react';
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 // import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { CountryType, StateType, useCountries } from "@/Api/External/useContries";
 import { useProfile } from "@/Api/Profile";
-import { useCallProfileInfo } from "@/hooks/Profile";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
-import { Input } from "@/components/ui/input";
-import defaultProfle from "../Icons/defaultprofile.svg"
-import { DatePicker, InputNumber } from "antd";
-import { UserResponse } from "@/reducers/me";
-import dayjs from "dayjs";
 import { ConfirmLogoutModal } from "@/components/Modals/Auth/LogoutConfirm";
+import { Input } from "@/components/ui/input";
+import { useCallProfileInfo } from "@/hooks/Profile";
+import { UserResponse } from "@/reducers/me";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { DatePicker, InputNumber, Select } from "antd";
+import dayjs from "dayjs";
+import defaultProfle from "../Icons/defaultprofile.svg";
+
+const Option = Select.Option;
 
 // StatCard component for profile statistics
 interface StatCardProps {
@@ -91,10 +92,10 @@ export default function UserProfile() {
   const [editMode, setEditMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const dispatch = useDispatch();
 
-  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames, updateSocialLinks, onboardingFirstStep, updateEducation } = useProfile();
+  const { updateIntrest, isLoading, deleteIntrest, updateBio, updateNames, updateSocialLinks, onboardingFirstStep, updateEducation, updateAddress } = useProfile();
   const { getMeByToken } = useCallProfileInfo();
+  const { getCountries, isLoading: isCountriesLoading, getStates, getCities } = useCountries();
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
@@ -126,12 +127,28 @@ export default function UserProfile() {
     fieldDescription: userInfo?.fieldDescription || "",
     fieldOfStudy: userInfo?.fieldOfStudy || "",
     institution: userInfo?.institution || "",
+    country: userInfo?.country || "",
+    zinPinCode: userInfo?.zinPinCode || "",
+    state: userInfo?.state || "",
+    city: userInfo?.city || "",
   });
 
   const [isEditSocial, setIsEditSocial] = useState<boolean>(false);
   const [isEditOneOnBoarding, setIsEditOpenOneBoarding] = useState<boolean>(false);
   const [isEditEducation, setIsEditEducation] = useState<boolean>(false);
   const [openLogout, setOpenLogout] = useState<boolean>(false);
+  const [isEditAddress, setIsEditAddress] = useState<boolean>(false);
+
+  // const { countries, states } = useSelector((state: RootState) => state.countries);
+
+  const [activeCountries, setActiveCountries] = useState<CountryType[]>([]);
+  const [countries, setCountries] = useState<CountryType[]>([]);
+  const [states, setStates] = useState<StateType[]>([]);
+  const [activeStates, setActiveStates] = useState<StateType[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [activeCities, setActiveCities] = useState<string[]>([]);
+
+  // const dispatch = useDispatch();
 
   // Toggle edit mode
   const toggleEditMode = () => {
@@ -245,6 +262,81 @@ export default function UserProfile() {
     }
   }
 
+  const getCountriesList = async () => {
+    const res = await getCountries();
+    setActiveCountries(res || []);
+    setCountries(res || []);
+  }
+
+  const updateountry = async (val: string) => {
+    const res = await getStates(val);
+    setStates(res || []);
+    setActiveStates(res || []);
+    handleSetProfileInfor("country", val);
+    handleSetProfileInfor("state", "");
+    handleSetProfileInfor("city", "");
+  }
+
+  const handleEditOpenCountries = async () => {
+    setIsEditAddress(true);
+    await getCountriesList();
+    if (userInfo?.country) {
+      updateountry(userInfo?.country);
+    }
+  }
+
+  const handleCountriesSearch = (value: string) => {
+    if (value) {
+      const val = countries.filter((country) =>
+        country.country.toLowerCase().includes(value.toLowerCase())
+      );
+      setActiveCountries(val || []);
+    }
+    setActiveCountries(countries || []);
+  }
+
+  const handleStatesSearch = (value: string) => {
+    if (value) {
+      const val = states.filter((state) =>
+        state.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setActiveStates(val || []);
+    }
+    setActiveStates(states || []);
+  }
+
+  const handleCitiesSearch = (value: string) => {
+    if (value) {
+      const val = cities.filter((city) =>
+        city.toLowerCase().includes(value.toLowerCase())
+      );
+      setActiveCities(val || []);
+    }
+    setActiveCities(cities || []);
+  }
+
+  const updateState = async (val: string) => {
+    const res = await getCities(profileInfo.country || "", val || profileInfo.state || "");
+    handleSetProfileInfor("state", val);
+    handleSetProfileInfor("city", "");
+    setCities(res || []);
+    setActiveCities(res || []);
+  }
+
+  const updateAddressByToken = async () => {
+    const res = await updateAddress({
+      country: profileInfo.country,
+      state: profileInfo.state,
+      city: profileInfo.city,
+      zinPinCode: profileInfo.zinPinCode,
+      address: profileInfo.address,
+    });
+    if (res?.success) {
+      getMeByToken();
+      setIsEditAddress(false);
+    }
+  }
+
   useEffect(() => {
     setProfileInfo({
       firstName: userInfo?.firstName || "",
@@ -259,6 +351,10 @@ export default function UserProfile() {
       fieldOfStudy: userInfo?.fieldOfStudy || "",
       fieldDescription: userInfo?.fieldDescription || "",
       institution: userInfo?.institution || "",
+      country: userInfo?.country || "",
+      zinPinCode: userInfo?.zinPinCode || "",
+      state: userInfo?.state || "",
+      city: userInfo?.city || "",
     })
   }, [userInfo]);
 
@@ -943,6 +1039,7 @@ export default function UserProfile() {
                       <Textarea
                         placeholder="Describes your role"
                         onChange={(e) => handleSetProfileInfor('fieldDescription', e.target.value)}
+                        value={profileInfo?.fieldDescription || ""}
                       />
                     ) : (
                       <div className="flex-1">
@@ -954,6 +1051,114 @@ export default function UserProfile() {
                   </div>
                 </div>
                 {isEditEducation && <div className="w-full flex justify-end py-2 p-x1 gap-3"><Button variant="outline" onClick={() => setIsEditEducation(false)}>Cancel</Button><Button onClick={updateEducationByToken} isLoading={isLoading.updateEducation}>Save</Button></div>}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Addresss */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mb-8 md:mb-12"
+          >
+
+            <div className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-md shadow-xl border border-indigo-100/50">
+              <div className="p-4 md:p-8">
+                <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-full bg-indigo-100">
+                      <Link className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" to={""} />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-indigo-800">Address</h2>
+                  </div>
+                  {!isEditAddress && <div onClick={handleEditOpenCountries} className="w-fit flex justify-center items-center gap-3 cursor-pointer hover:shadow-lg px-3 py-1.5 rounded"><Pencil size={15} />Edit</div>}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditAddress ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditAddress ? (
+                      <Select placeholder="Select your country" showSearch onSearch={(e) => handleCountriesSearch(e)} onChange={(e) => updateountry(e)} value={profileInfo?.country || undefined} className="w-full">
+                        {activeCountries?.map((country) => (<option value={country?.country} key={country.iso3}>
+                          {country.country}
+                        </option>))}
+                      </Select>
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Country</p>
+                        <p className="text-lg leading-relaxed text-indigo-700 line-clamp-4">{userInfo?.country || "--"}</p>
+                      </div>
+
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditAddress ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditAddress ? (
+                      <Select
+                        defaultValue={profileInfo?.state || undefined}
+                        loading={isCountriesLoading.getStates}
+                        disabled={!userInfo.country}
+                        onChange={(e) => updateState(e)}
+                        showSearch
+                        onSearch={(e) => handleStatesSearch(e)}
+                        placeholder="Select your state" className="w-full">
+                        {activeStates?.map((state) => (<option value={state?.name} key={state?.state_code}>
+                          {state?.name}
+                        </option>))}
+                      </Select>
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">State</p>
+                        <p className="text-lg leading-relaxed text-indigo-700 line-clamp-4">{userInfo?.state || "--"}</p>
+                      </div>
+
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditAddress ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditAddress ? (
+                      <Select
+                        defaultValue={profileInfo?.city || undefined}
+                        loading={isCountriesLoading.getCities}
+                        disabled={!userInfo.country || !userInfo.state}
+                        onChange={(e) => handleSetProfileInfor("city", e)}
+                        showSearch onSearch={(e) => handleCitiesSearch(e)}
+                        placeholder="Select your city" className="w-full">
+                        {activeCities?.map((city) => (<option value={city} key={city}>
+                          {city}
+                        </option>))}
+                      </Select>
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">City</p>
+                        <p className="text-lg leading-relaxed text-indigo-700 line-clamp-4">{userInfo?.city || "--"}</p>
+                      </div>
+
+                    )}
+                  </div>
+                  <div className={`flex items-center gap-3 p-3 md:p-4 rounded-xl ${isEditAddress ? 'bg-white border border-indigo-200' : 'bg-indigo-50/50'}`}>
+                    {isEditAddress ? (
+                      <Input
+                        defaultValue={profileInfo?.zinPinCode || ""}
+                        onChange={(e) => handleSetProfileInfor('zinPinCode', e.target.value)}
+                        className="flex-1 border-indigo-200 bg-white"
+                        placeholder="Enter Pin/Zip Code"
+                        type="number"
+                        max={999999}
+                      />
+                    ) : (
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Zip/Pin Code</p>
+                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.zinPinCode || "--"}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {isEditAddress && <div className="w-full flex justify-end py-2 p-x1 gap-3">
+                  <Button variant="outline" onClick={() => setIsEditAddress(false)}>Cancel</Button>
+                  <Button onClick={updateAddressByToken} isLoading={isLoading.updateAddress}>Save</Button>
+                </div>}
               </div>
             </div>
           </motion.div>

@@ -35,7 +35,6 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
     const { user: users } = useSelector((state: RootState) => state.allUserSlice);
 
     const { createSession, isLoading } = useAdminSessions();
-    console.log("currentSession", currentSession);
     const updateSession = ({ type, value }: { type: string, value: string }) => {
         setCurrentSession((prev) => ({
             ...prev,

@@ -22,6 +22,7 @@ type ProfileLoading = {
   updateSocialLinks: boolean;
   onboardingFirstStep: boolean;
   updateEducation: boolean;
+  updateAddress: boolean;
 };
 
 export type MeResponse = {
@@ -47,6 +48,14 @@ export type OnboardingFirstStep = {
   phone: string;
 };
 
+export type AddressProps = {
+  address?: string;
+  city: string;
+  state: string;
+  country: string;
+  zinPinCode: string;
+};
+
 const token = localStorage.getItem("token");
 
 export const useProfile = () => {
@@ -67,6 +76,7 @@ export const useProfile = () => {
     updateSocialLinks: false,
     onboardingFirstStep: false,
     updateEducation: false,
+    updateAddress: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -411,6 +421,26 @@ export const useProfile = () => {
     }
   };
 
+  const updateAddress = async (payload: AddressProps) => {
+    try {
+      handleLoading("updateAddress", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/update/address`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateAddress:", err);
+    } finally {
+      handleLoading("updateAddress", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -429,5 +459,6 @@ export const useProfile = () => {
     updateSocialLinks,
     onboardingFirstStep,
     updateEducation,
+    updateAddress,
   };
 };

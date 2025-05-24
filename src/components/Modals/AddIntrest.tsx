@@ -49,7 +49,6 @@ export const AddIntrest = ({ open, onOpenChange, onSuccess }: JoinEventProps) =>
                 name: currentIntrest.name,
                 description: currentIntrest.description
             });
-            console.log("Intrest created successfully:", response);
             getAllIntrestsByToken();
             onSuccess();
         } catch (error) {
