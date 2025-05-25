@@ -737,7 +737,7 @@ export default function Dashboard() {
                     <div className="mt-6 text-center">
                       <p className="text-xs text-gray-500 max-w-md mx-auto">
                         Rankings are based on Aura Points earned through event participation, sessions attended, and platform engagement.
-                        <span className="text-indigo-600 font-medium cursor-pointer hover:underline ml-1">Learn more</span>
+                        {/* <span className="text-indigo-600 font-medium cursor-pointer hover:underline ml-1">Learn more</span> */}
                       </p>
                     </div>
                   </div>
@@ -1239,8 +1239,8 @@ export default function Dashboard() {
                             <AvatarFallback>{session.presenter?.profileImage}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <span className="text-xs font-medium text-gray-800 block">{session.presenter.firstName}</span>
-                            <span className="text-xs text-gray-500">{session.presenter?.designation}</span>
+                            <span className="text-xs font-medium text-gray-800 block">{session?.presenter?.firstName}</span>
+                            <span className="text-xs text-gray-500">{session?.presenter?.designation}</span>
                           </div>
                           <div className={`ml-auto bg-white px-2 py-1 rounded-md text-xs font-medium text-purple-600 shadow-sm border border-purple-100/50`}>
                             {session?._count?.joinedUsers || 0} Enrolled
@@ -1250,7 +1250,7 @@ export default function Dashboard() {
                         <div className="flex items-center justify-between text-sm mb-4">
                           <div className="flex items-center gap-1 text-gray-500">
                             <CalendarIcon className="h-4 w-4" />
-                            <span>{dayjs(session?.date).format("MMM DD, YYYY")}, {session.time}</span>
+                            <span>{dayjs(session?.date).format("MMM DD, YYYY")}, {session?.time}</span>
                           </div>
                         </div>
 

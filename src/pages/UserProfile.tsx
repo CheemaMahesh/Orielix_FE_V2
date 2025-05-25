@@ -840,7 +840,9 @@ export default function UserProfile() {
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">Portfolio</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.portfolioLink}</p>
+                        <a className="block max-w-xs" target="_blank" href={userInfo?.portfolioLink || ""}>
+                          <p className="overflow-hidden text-sm md:text-base font-medium text-indigo-700">{userInfo?.portfolioLink}</p>
+                        </a>
                       </div>
                     )}
                   </div>
@@ -859,7 +861,9 @@ export default function UserProfile() {
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">LinkedIn</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.linkedinLink}</p>
+                        <a className="block max-w-xs" target="_blank" href={userInfo?.linkedinLink || ""}>
+                          <p className="overflow-hidden text-sm md:text-base font-medium text-indigo-700">{userInfo?.linkedinLink}</p>
+                        </a>
                       </div>
                     )}
                   </div>
@@ -878,7 +882,9 @@ export default function UserProfile() {
                     ) : (
                       <div className="flex-1">
                         <p className="text-sm text-gray-500">GitHub</p>
-                        <p className="text-sm md:text-base font-medium text-indigo-700">{userInfo?.githubLink}</p>
+                        <a className="block max-w-xs" target="_blank" href={userInfo?.githubLink || ""}>
+                          <p className="overflow-hidden text-sm md:text-base font-medium text-indigo-700">{userInfo?.githubLink}</p>
+                        </a>
                       </div>
                     )}
                   </div>
