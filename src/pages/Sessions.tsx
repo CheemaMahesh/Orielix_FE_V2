@@ -520,12 +520,12 @@ export default function Sessions() {
                           {/* Presenter info with enhanced styling */}
                           <div className={`flex items-center mb-4 p-2 bg-purple-50/50 rounded-lg border border-purple-100/50`}>
                             <Avatar className="h-8 w-8 border-2 border-white shadow-sm mr-2">
-                              <AvatarImage src={session.presenter.profileImage} />
-                              <AvatarFallback>{session.presenter.profileImage}</AvatarFallback>
+                              <AvatarImage src={session?.presenter?.profileImage} />
+                              <AvatarFallback>{session?.presenter?.profileImage}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <span className="text-xs font-medium text-gray-800 block">{session.presenter.firstName}</span>
-                              <span className="text-xs text-gray-500">{session.presenter.designation}</span>
+                              <span className="text-xs font-medium text-gray-800 block">{session?.presenter?.firstName}</span>
+                              <span className="text-xs text-gray-500">{session?.presenter?.designation}</span>
                             </div>
                             <div className={`ml-auto bg-white px-2 py-1 rounded-md text-xs font-medium text-purple-600 shadow-sm border border-purple-100/50`}>
                               {session._count?.joinedUsers || 0} Enrolled

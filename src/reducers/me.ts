@@ -38,6 +38,9 @@ export interface UserResponse {
     zipCode: string | null;
     state: string | null;
     city: string | null;
+    countryRank: number | null;
+    stateRank: number | null;
+    institutionRank: number | null;
   };
 }
 

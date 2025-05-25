@@ -514,8 +514,8 @@ export default function Events() {
                             <AvatarFallback>{event.presenter?.profileImage}</AvatarFallback>
                           </Avatar>
                           <div className="min-w-0 flex-1">
-                            <span className="text-xs font-medium text-gray-800 block truncate">{event.presenter.firstName}</span>
-                            <span className="text-xs text-gray-500 block truncate">{event.presenter.designation}</span>
+                            <span className="text-xs font-medium text-gray-800 block truncate">{event?.presenter?.firstName}</span>
+                            <span className="text-xs text-gray-500 block truncate">{event?.presenter?.designation}</span>
                           </div>
                           <div className={`mt-2 sm:mt-0 ml-0 sm:ml-auto w-full sm:w-auto bg-white px-2 py-1 rounded-md text-xs font-medium text-purple-600 shadow-sm border border-purple-100/50 text-center`}>
                             {event._count?.joinedUsers || 0} Attending

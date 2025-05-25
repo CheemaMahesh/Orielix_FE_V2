@@ -277,14 +277,6 @@ export default function UserProfile() {
     handleSetProfileInfor("city", "");
   }
 
-  const handleEditOpenCountries = async () => {
-    setIsEditAddress(true);
-    await getCountriesList();
-    if (userInfo?.country) {
-      updateountry(userInfo?.country);
-    }
-  }
-
   const handleCountriesSearch = (value: string) => {
     if (value) {
       const val = countries.filter((country) =>
@@ -334,6 +326,17 @@ export default function UserProfile() {
     if (res?.success) {
       getMeByToken();
       setIsEditAddress(false);
+    }
+  }
+
+  const handleEditOpenCountries = async () => {
+    setIsEditAddress(true);
+    await getCountriesList();
+    if (userInfo?.country) {
+      updateountry(userInfo?.country);
+      if (userInfo?.state) {
+        updateState(userInfo?.state);
+      }
     }
   }
 

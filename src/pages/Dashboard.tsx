@@ -34,6 +34,7 @@ import { SessionDetails } from "@/components/Modals/SessionDetails";
 import { RegisterSession } from "@/components/Modals/RegisterSession";
 import { ShowSessionSuccess } from "@/components/Modals/ShowSessionSuccess";
 import defaultProfle from "../Icons/defaultprofile.svg"
+import { InstitutionTopRankersType, RanksType } from "@/reducers/ranks";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -42,6 +43,12 @@ interface NavItemProps {
   active?: boolean;
   badge?: string;
   onClick?: () => void;
+}
+
+type InstitutionTopRankersTypeExtended = {
+  name: string,
+  rank: number,
+  email: string
 }
 
 const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
@@ -97,7 +104,13 @@ export default function Dashboard() {
   const { events, loading: isEventLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: isSessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
 
-  // -------------------------------------------
+  // -------------------Ranks------------------------
+  const ranks = useSelector((state: RootState) => state.ranks);
+  const [activeRanks, setActiveRanks] = useState<InstitutionTopRankersTypeExtended[] | null>(null);
+  console.log("ranks", ranks);
+  console.log("activeRanks", activeRanks);
+
+  // ---------------------------------------
 
 
   useEffect(() => {
@@ -139,241 +152,6 @@ export default function Dashboard() {
   }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Ranking data for different categories
-  const rankingData = {
-    institution: {
-      you: {
-        name: "You",
-        rank: 28,
-        points: 1051,
-        level: 4,
-        nextLevel: 1200,
-        growth: "+125",
-        color: "from-purple-500 to-indigo-400",
-        hoverColor: "from-purple-600 to-indigo-500",
-        barColor: "from-purple-500 to-indigo-500",
-        borderColor: "border-indigo-200",
-        textColor: "text-indigo-700",
-        height: "h-36 sm:h-40",
-        avatar: "/lovable-uploads/user-avatar.png",
-        achievements: ["Top Contributor", "Streak Master", "Quality Content"]
-      },
-      top: {
-        name: "Rohit",
-        rank: 1,
-        points: 2845,
-        level: 8,
-        nextLevel: 3000,
-        growth: "+210",
-        color: "from-rose-500 to-red-400",
-        hoverColor: "from-rose-600 to-red-500",
-        barColor: "from-rose-500 to-red-500",
-        borderColor: "border-rose-200",
-        textColor: "text-rose-700",
-        height: "h-52 sm:h-56",
-        avatar: "/lovable-uploads/avatar-1.png",
-        achievements: ["Institution Leader", "Content Champion", "Engagement Pro"]
-      },
-      other: {
-        name: "Akshay",
-        rank: 53,
-        points: 876,
-        level: 3,
-        nextLevel: 1000,
-        growth: "+92",
-        color: "from-emerald-500 to-green-400",
-        hoverColor: "from-emerald-600 to-green-500",
-        barColor: "from-emerald-500 to-green-500",
-        borderColor: "border-emerald-200",
-        textColor: "text-emerald-700",
-        height: "h-24 sm:h-28",
-        avatar: "/lovable-uploads/avatar-2.png",
-        achievements: ["Rising Star", "Consistent Creator"]
-      }
-    },
-    state: {
-      you: {
-        name: "You",
-        rank: 156,
-        points: 1051,
-        level: 4,
-        nextLevel: 1200,
-        growth: "+125",
-        color: "from-purple-500 to-indigo-400",
-        hoverColor: "from-purple-600 to-indigo-500",
-        barColor: "from-purple-500 to-indigo-500",
-        borderColor: "border-indigo-200",
-        textColor: "text-indigo-700",
-        height: "h-28 sm:h-32",
-        avatar: "/lovable-uploads/user-avatar.png",
-        achievements: ["Top Contributor", "Streak Master", "Quality Content"]
-      },
-      top: {
-        name: "Priya",
-        rank: 1,
-        points: 3245,
-        level: 9,
-        nextLevel: 3500,
-        growth: "+180",
-        color: "from-rose-500 to-red-400",
-        hoverColor: "from-rose-600 to-red-500",
-        barColor: "from-rose-500 to-red-500",
-        borderColor: "border-rose-200",
-        textColor: "text-rose-700",
-        height: "h-52 sm:h-56",
-        avatar: "/lovable-uploads/avatar-3.png",
-        achievements: ["State Champion", "Trending Creator", "Engagement Master"]
-      },
-      other: {
-        name: "Rahul",
-        rank: 87,
-        points: 1320,
-        level: 5,
-        nextLevel: 1500,
-        growth: "+145",
-        color: "from-emerald-500 to-green-400",
-        hoverColor: "from-emerald-600 to-green-500",
-        barColor: "from-emerald-500 to-green-500",
-        borderColor: "border-emerald-200",
-        textColor: "text-emerald-700",
-        height: "h-32 sm:h-36",
-        avatar: "/lovable-uploads/avatar-4.png",
-        achievements: ["Consistent Creator", "Engagement Pro"]
-      }
-    },
-    country: {
-      you: {
-        name: "You",
-        rank: 1842,
-        points: 1051,
-        level: 4,
-        nextLevel: 1200,
-        growth: "+125",
-        color: "from-purple-500 to-indigo-400",
-        hoverColor: "from-purple-600 to-indigo-500",
-        barColor: "from-purple-500 to-indigo-500",
-        borderColor: "border-indigo-200",
-        textColor: "text-indigo-700",
-        height: "h-20 sm:h-24",
-        avatar: "/lovable-uploads/user-avatar.png",
-        achievements: ["Top Contributor", "Streak Master", "Quality Content"]
-      },
-      top: {
-        name: "Arjun",
-        rank: 1,
-        points: 4567,
-        level: 10,
-        nextLevel: 5000,
-        growth: "+320",
-        color: "from-rose-500 to-red-400",
-        hoverColor: "from-rose-600 to-red-500",
-        barColor: "from-rose-500 to-red-500",
-        borderColor: "border-rose-200",
-        textColor: "text-rose-700",
-        height: "h-52 sm:h-56",
-        avatar: "/lovable-uploads/avatar-5.png",
-        achievements: ["National Champion", "Content Legend", "Trending Creator"]
-      },
-      other: {
-        name: "Neha",
-        rank: 534,
-        points: 2134,
-        level: 7,
-        nextLevel: 2500,
-        growth: "+178",
-        color: "from-emerald-500 to-green-400",
-        hoverColor: "from-emerald-600 to-green-500",
-        barColor: "from-emerald-500 to-green-500",
-        borderColor: "border-emerald-200",
-        textColor: "text-emerald-700",
-        height: "h-36 sm:h-40",
-        avatar: "/lovable-uploads/avatar-6.png",
-        achievements: ["Rising Star", "Engagement Pro", "Quality Content"]
-      }
-    }
-  };
-
-  // Calculate bar heights dynamically based on rankings
-  const calculateHeights = () => {
-    const updatedRankingData = { ...rankingData };
-
-    Object.keys(updatedRankingData).forEach(category => {
-      // Get ranks and points for this category
-      const ranks = [
-        updatedRankingData[category].you.rank,
-        updatedRankingData[category].top.rank,
-        updatedRankingData[category].other.rank
-      ];
-
-      const points = [
-        updatedRankingData[category].you.points,
-        updatedRankingData[category].top.points,
-        updatedRankingData[category].other.points
-      ];
-
-      // Set height for top person (always tallest)
-      updatedRankingData[category].top.height = "h-52 sm:h-56";
-
-      // Calculate heights based on logarithmic scale relative to rank
-      // The lower the rank number (better rank), the taller the bar
-      const maxRank = Math.max(...ranks);
-      const minRank = Math.min(...ranks);
-      const maxPoints = Math.max(...points);
-
-      const calculateHeight = (rank, points) => {
-        // Base height calculation using logarithmic scale for better visual representation
-        // This ensures even large rank differences (like 1 vs 1000) still show meaningful bars
-        let heightValue;
-
-        if (rank === 1) {
-          // #1 rank is always tallest
-          heightValue = 56;
-        } else {
-          // For other ranks, use a logarithmic scale
-          // This formula gives more height to better ranks (lower numbers)
-          // log(rank) / log(maxRank) produces a value between 0 and 1
-          // Multiply by 40 to get a range of 0-40
-          // Subtract from 56 so better ranks get taller bars
-          // Ensure minimum height of 16
-          const rankFactor = Math.log(rank) / Math.log(maxRank);
-          const pointsFactor = points / maxPoints;
-
-          // Combine rank and points factors (70% rank, 30% points)
-          const combinedFactor = (rankFactor * 0.7) + ((1 - pointsFactor) * 0.3);
-
-          heightValue = Math.max(16, 56 - (combinedFactor * 40));
-        }
-
-        // Round to nearest 4 for Tailwind height classes
-        const roundedHeight = Math.round(heightValue / 4) * 4;
-        return `h-${roundedHeight} sm:h-${roundedHeight + 4}`;
-      };
-
-      // Your height
-      if (updatedRankingData[category].you.rank !== 1) {
-        updatedRankingData[category].you.height = calculateHeight(
-          updatedRankingData[category].you.rank,
-          updatedRankingData[category].you.points
-        );
-      } else {
-        updatedRankingData[category].you.height = "h-52 sm:h-56";
-      }
-
-      // Other person's height
-      if (updatedRankingData[category].other.rank !== 1) {
-        updatedRankingData[category].other.height = calculateHeight(
-          updatedRankingData[category].other.rank,
-          updatedRankingData[category].other.points
-        );
-      } else {
-        updatedRankingData[category].other.height = "h-52 sm:h-56";
-      }
-    });
-
-    return updatedRankingData;
-  };
-
-  const currentData = calculateHeights()[activeTab];
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(78), 500);
@@ -393,14 +171,92 @@ export default function Dashboard() {
 
   const handleOpenSessionModal = useCallback(({ session, type }: { session: SessionType, type: string }) => {
     setSelectedSession(session);
-    if (type === "leave") {
-      // setLeaveEventModalOpen(true);
-    } else {
+    if (type !== "leave") {
       setOpenSessionRegister(true);
     }
   }, []);
   const { getHoursByMinutes } = useFunctionDirectory();
   const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+
+  const setUpRankings = () => {
+    let tempActiveRanks: InstitutionTopRankersTypeExtended[] = [];
+
+    if (activeTab === "institution") {
+      tempActiveRanks = ranks?.institutionTopRankers?.map((item) => ({
+        rank: item.institutionRank,
+        name: userInfo?.id === item.id ? "You" : item.firstName,
+        email: item.email,
+      })) || [];
+
+      const isContainsYou = tempActiveRanks.some((item) => item.name === "You");
+      if (!isContainsYou) {
+        tempActiveRanks = tempActiveRanks.slice(0, 2);
+        tempActiveRanks.push({
+          rank: userInfo?.institutionRank,
+          name: "You",
+          email: userInfo?.email,
+        });
+      }
+      setActiveRanks(tempActiveRanks);
+    }
+
+    if (activeTab === "state") {
+      tempActiveRanks = ranks?.stateTopRankers?.map((item) => ({
+        rank: item.stateRank,
+        name: userInfo?.id === item.id ? "You" : item.firstName,
+        email: item.email,
+      })) || [];
+
+      const isContainsYou = tempActiveRanks.some((item) => item.name === "You");
+      if (!isContainsYou) {
+        tempActiveRanks = tempActiveRanks.slice(0, 2);
+        tempActiveRanks.push({
+          rank: userInfo?.stateRank,
+          name: "You",
+          email: userInfo?.email,
+        });
+      }
+      setActiveRanks(tempActiveRanks);
+    }
+
+    if (activeTab === "country") {
+      tempActiveRanks = ranks?.countryTopRankers?.map((item) => ({
+        rank: item.countryRank,
+        name: userInfo?.id === item.id ? "You" : item.firstName,
+        email: item.email,
+      })) || [];
+
+      const isContainsYou = tempActiveRanks.some((item) => item.name === "You");
+      if (!isContainsYou) {
+        tempActiveRanks = tempActiveRanks.slice(0, 2);
+        tempActiveRanks.push({
+          rank: userInfo?.countryRank,
+          name: "You",
+          email: userInfo?.email,
+        });
+      }
+      setActiveRanks(tempActiveRanks);
+    }
+  }
+
+  useEffect(() => {
+    setUpRankings();
+  }, [activeTab, ranks]);
+
+  const utilRankings = [
+    {
+      color: "from-purple-500 to-indigo-400",
+      height: " h-52 sm:h-56",
+    },
+    {
+      color: "from-rose-500 to-red-400",
+      height: "	h-24 sm:h-28",
+    },
+    {
+      color: "from-emerald-500 to-green-400",
+      height: "	h-24 sm:h-28",
+    },
+  ]
 
 
   return (
@@ -652,13 +508,13 @@ export default function Dashboard() {
                   <div className="mt-0 px-2 sm:px-8 relative pb-6">
                     <div className="flex justify-center items-end h-60 relative gap-4 sm:gap-10 pt-14">
                       {/* Your Bar */}
-                      <div className="flex flex-col items-center group">
+                      {/* <div className="flex flex-col items-center group">
                         <div className="relative flex flex-col items-center">
                           <div
                             className={`
-                              w-16 sm:w-20 bg-gradient-to-t ${currentData.you.color} 
+                              w-16 sm:w-20 bg-gradient-to-t from-purple-500 to-indigo-400
                               hover:shadow-lg 
-                              rounded-t-xl ${currentData.you.height} shadow-md 
+                              rounded-t-xl h-12 shadow-md 
                               transition-all duration-300 ease-out
                               group-hover:scale-105 border-t border-indigo-200
                             `}
@@ -666,7 +522,7 @@ export default function Dashboard() {
                             <div className="absolute -top-6 left-0 right-0 flex justify-center">
                               <div className="bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
                                 <span className="text-xs font-semibold text-white">#</span>
-                                <span className="text-sm font-bold text-white">{currentData.you.rank}</span>
+                                <span className="text-sm font-bold text-white">{120}</span>
                               </div>
                             </div>
                           </div>
@@ -676,16 +532,16 @@ export default function Dashboard() {
                             <span className="text-xs sm:text-sm font-semibold text-indigo-700">You</span>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Top Person's Bar */}
-                      <div className="flex flex-col items-center group">
+                      {/* <div className="flex flex-col items-center group">
                         <div className="relative flex flex-col items-center">
                           <div
                             className={`
-                              w-16 sm:w-20 bg-gradient-to-t ${currentData.top.color} 
+                              w-16 sm:w-20 bg-gradient-to-t from-rose-500 to-red-400
                               hover:shadow-lg 
-                              rounded-t-xl ${currentData.top.height} shadow-md 
+                              rounded-t-xl h-52 shadow-md 
                               transition-all duration-300 ease-out
                               group-hover:scale-105 border-t border-red-200
                             `}
@@ -693,26 +549,26 @@ export default function Dashboard() {
                             <div className="absolute -top-6 left-0 right-0 flex justify-center">
                               <div className="bg-gradient-to-r from-rose-500 to-red-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-rose-200 flex items-center gap-1">
                                 <Crown className="h-3 w-3 text-yellow-300" />
-                                <span className="text-sm font-bold text-white">{currentData.top.rank}</span>
+                                <span className="text-sm font-bold text-white">{130}</span>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="flex flex-col items-center mt-3">
                           <div className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-rose-100 to-red-50 border border-rose-200 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
-                            <span className="text-xs sm:text-sm font-semibold text-rose-700">{currentData.top.name}</span>
+                            <span className="text-xs sm:text-sm font-semibold text-rose-700">Mahesh</span>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Other Person's Bar */}
-                      <div className="flex flex-col items-center group">
+                      {/* <div className="flex flex-col items-center group">
                         <div className="relative flex flex-col items-center">
                           <div
                             className={`
-                              w-16 sm:w-20 bg-gradient-to-t ${currentData.other.color} 
+                              w-16 sm:w-20 bg-gradient-to-t from-emerald-500 to-green-400
                               hover:shadow-lg 
-                              rounded-t-xl ${currentData.other.height} shadow-md 
+                              rounded-t-xl h-48 shadow-md 
                               transition-all duration-300 ease-out
                               group-hover:scale-105 border-t border-green-200
                             `}
@@ -720,17 +576,47 @@ export default function Dashboard() {
                             <div className="absolute -top-6 left-0 right-0 flex justify-center">
                               <div className="bg-gradient-to-r from-emerald-500 to-green-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
                                 <span className="text-xs font-semibold text-white">#</span>
-                                <span className="text-sm font-bold text-white">{currentData.other.rank}</span>
+                                <span className="text-sm font-bold text-white">89</span>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="flex flex-col items-center mt-3">
                           <div className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-green-50 border border-emerald-200 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
-                            <span className="text-xs sm:text-sm font-semibold text-emerald-700">{currentData.other.name}</span>
+                            <span className="text-xs sm:text-sm font-semibold text-emerald-700">Hima</span>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
+                    </div>
+
+                    <div className="flex justify-center items-end h-60 relative gap-4 sm:gap-10 pt-14">
+                      {activeRanks?.map((rank, index) => (
+                        <div key={`${rank.email}_${index}`} className="flex flex-col items-center group">
+                          <div className="relative flex flex-col items-center">
+                            <div
+                              className={`
+                              w-16 sm:w-20 bg-gradient-to-t ${utilRankings?.at(index).color}
+                              hover:shadow-lg 
+                              rounded-t-xl ${utilRankings?.at(index)?.height} shadow-md 
+                              transition-all duration-300 ease-out
+                              group-hover:scale-105 border-t border-indigo-200
+                            `}
+                            >
+                              <div className="absolute -top-6 left-0 right-0 flex justify-center">
+                                <div className="bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
+                                  <span className="text-xs font-semibold text-white">#</span>
+                                  <span className="text-sm font-bold text-white">{rank?.rank}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-center mt-3">
+                            <div className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                              <span className="text-xs sm:text-sm font-semibold text-indigo-700">{rank?.name}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
 
                     {/* Simple ranking explanation */}

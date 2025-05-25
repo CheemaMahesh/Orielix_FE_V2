@@ -5,9 +5,11 @@ import { addUser } from "@/reducers/me";
 import { useDispatch } from "react-redux";
 import { addSessions, setSessionLoading } from "@/reducers/sessions";
 import { addIntrests, setIntrestLoading } from "@/reducers/Intrests";
+import { addRaanks } from "@/reducers/ranks";
 
 export const useCallProfileInfo = () => {
-  const { getAllEvents, getMe, getAllSessions, getAllIntrests } = useProfile();
+  const { getAllEvents, getMe, getAllSessions, getAllIntrests, getRankings } =
+    useProfile();
   const dispatch = useDispatch();
 
   const getAllEventsByToken = async () => {
@@ -21,11 +23,30 @@ export const useCallProfileInfo = () => {
     dispatch(setEventLoading(false));
   };
 
+  const getAllRankingsByToken = async () => {
+    const res = await getRankings();
+    if (res) {
+      if (res.success) {
+        console.log("res", res.rankings);
+        dispatch(addRaanks(res.rankings));
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch rankings.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      console.log("Error fetching rankings data");
+    }
+  };
+
   const getMeByToken = async () => {
     const res = await getMe();
     if (res) {
       if (res.success) {
         dispatch(addUser({ user: res.user }));
+        await getAllRankingsByToken();
       }
     } else {
       console.log("Error fetching user data");
@@ -62,5 +83,6 @@ export const useCallProfileInfo = () => {
     getAllSessionsByToken,
     getAllIntrestsByToken,
     getAllRolesByToken,
+    getAllRankingsByToken,
   };
 };

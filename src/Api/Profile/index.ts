@@ -23,6 +23,7 @@ type ProfileLoading = {
   onboardingFirstStep: boolean;
   updateEducation: boolean;
   updateAddress: boolean;
+  getRankings: boolean;
 };
 
 export type MeResponse = {
@@ -77,6 +78,7 @@ export const useProfile = () => {
     onboardingFirstStep: false,
     updateEducation: false,
     updateAddress: false,
+    getRankings: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -441,6 +443,25 @@ export const useProfile = () => {
     }
   };
 
+  const getRankings = async () => {
+    try {
+      handleLoading("getRankings", true);
+      const response = await axios.get(
+        `${config.apiUrl}/api/v1/user/rankings`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during getRankings:", err);
+    } finally {
+      handleLoading("getRankings", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -460,5 +481,6 @@ export const useProfile = () => {
     onboardingFirstStep,
     updateEducation,
     updateAddress,
+    getRankings,
   };
 };
