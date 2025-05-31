@@ -6,11 +6,38 @@ import { useDispatch } from "react-redux";
 import { addSessions, setSessionLoading } from "@/reducers/sessions";
 import { addIntrests, setIntrestLoading } from "@/reducers/Intrests";
 import { addRaanks } from "@/reducers/ranks";
+import {
+  addNotifications,
+  setNotificationLoading,
+} from "@/reducers/notifications";
 
 export const useCallProfileInfo = () => {
-  const { getAllEvents, getMe, getAllSessions, getAllIntrests, getRankings } =
-    useProfile();
+  const {
+    getAllEvents,
+    getMe,
+    getAllSessions,
+    getAllIntrests,
+    getRankings,
+    getAllNotifications,
+  } = useProfile();
   const dispatch = useDispatch();
+
+  const getAllNotificationsByToken = async (userid: string) => {
+    dispatch(setNotificationLoading(true));
+    const res = await getAllNotifications(userid);
+    if (res) {
+      if (res.success) {
+        dispatch(addNotifications(res.notifications));
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch notifications.",
+          variant: "destructive",
+        });
+      }
+    }
+    dispatch(setNotificationLoading(false));
+  };
 
   const getAllEventsByToken = async () => {
     dispatch(setEventLoading(true));
@@ -47,6 +74,7 @@ export const useCallProfileInfo = () => {
       if (res.success) {
         dispatch(addUser({ user: res.user }));
         await getAllRankingsByToken();
+        await getAllNotificationsByToken(res?.user?.id || "");
       }
     } else {
       console.log("Error fetching user data");
@@ -84,5 +112,6 @@ export const useCallProfileInfo = () => {
     getAllIntrestsByToken,
     getAllRolesByToken,
     getAllRankingsByToken,
+    getAllNotificationsByToken,
   };
 };

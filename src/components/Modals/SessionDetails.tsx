@@ -123,8 +123,8 @@ export const SessionDetails = ({ open, onOpenChange, session, onRegister }: Sess
                                                     <AvatarFallback>{session.presenter?.profileImage}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <h4 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">{session.presenter.firstName}</h4>
-                                                    <p className="text-sm text-gray-600">{session.presenter.designation}</p>
+                                                    <h4 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">{session.presenter?.firstName}</h4>
+                                                    <p className="text-sm text-gray-600">{session.presenter?.designation}</p>
                                                 </div>
                                             </div>
                                             <p className="text-sm text-gray-600 relative z-10">

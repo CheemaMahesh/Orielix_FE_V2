@@ -1,34 +1,26 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  HomeIcon as Home,
-  CalendarIcon as Calendar,
-  BookOpenIcon as BookOpen,
-  UsersIcon as Users,
-  BellIcon as Bell,
-  User as UserIcon,
-  X,
-  CheckCircle,
-  Clock,
-  MessageSquare,
-  Heart,
-  Award,
-  Calendar as CalendarIcon,
-  FileText,
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
   AlertCircle,
+  Award,
   Bell as BellIcon,
   BellOff,
-  Filter,
-  MoreHorizontal,
+  BookOpenIcon as BookOpen,
+  CalendarIcon as Calendar,
+  Calendar as CalendarIcon,
+  CheckCircle,
   ChevronRight,
-  Menu,
-  LogOut
+  Heart,
+  HomeIcon as Home,
+  LogOut,
+  MessageSquare,
+  User as UserIcon,
+  UsersIcon as Users,
+  X
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -41,11 +33,10 @@ interface NavItemProps {
 
 const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
   <button
-    className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ease-in-out group relative overflow-hidden ${
-      active 
-        ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-[1.01]' 
+    className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ease-in-out group relative overflow-hidden ${active
+        ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-[1.01]'
         : 'hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50/80 text-indigo-800 hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.005]'
-    }`}
+      }`}
     onClick={onClick}
   >
     {/* Background glow effect */}
@@ -55,7 +46,7 @@ const NavItem = ({ icon, text, active, badge, onClick }: NavItemProps) => (
     {active && (
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 via-purple-400/20 to-indigo-400/20 opacity-30 blur-md"></div>
     )}
-    
+
     <div className={`relative z-10 ${active ? 'text-white' : 'text-indigo-600'} transition-all duration-200 ease-in-out ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
       {icon}
     </div>
@@ -91,7 +82,7 @@ export default function Notifications() {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeTab, setActiveTab] = useState("all");
-  
+
   // Notifications data related to sessions and events
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -240,18 +231,18 @@ export default function Notifications() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY > lastScrollY && currentScrollY > 80) {
         setVisible(false);
       } else {
         setVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
-    
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -259,7 +250,7 @@ export default function Notifications() {
 
   // Mark notification as read
   const markAsRead = (id: string) => {
-    setNotifications(notifications.map(notification => 
+    setNotifications(notifications.map(notification =>
       notification.id === id ? { ...notification, read: true } : notification
     ));
   };
@@ -314,12 +305,12 @@ export default function Notifications() {
       {/* Sidebar */}
       <div className={`fixed inset-0 z-50 transition-all duration-300 ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         {/* Overlay */}
-        <div 
+        <div
           className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-500 ease-in-out"
           style={{ opacity: sidebarOpen ? 1 : 0 }}
           onClick={() => setSidebarOpen(false)}
         ></div>
-        
+
         {/* Sidebar */}
         <div className={`absolute left-0 top-0 h-full w-[300px] bg-gradient-to-b from-indigo-100/95 via-purple-50/90 to-indigo-100/95 shadow-2xl backdrop-blur-sm transform transition-all duration-500 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-indigo-200/30 rounded-r-3xl`}>
           {/* Decorative elements */}
@@ -328,17 +319,17 @@ export default function Notifications() {
             <div className="absolute h-60 w-60 bottom-20 -left-20 bg-indigo-300/30 rounded-full blur-3xl animate-pulse opacity-70"></div>
             <div className="absolute h-20 w-20 top-1/2 right-10 bg-purple-400/20 rounded-full blur-xl animate-pulse opacity-80"></div>
           </div>
-          
+
           <div className="p-5 flex justify-between items-center border-b border-indigo-200/50 relative z-10">
             <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Navigation</h3>
-            <button 
+            <button
               className="p-2 rounded-full bg-white/80 hover:bg-white text-indigo-500 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ease-out hover:scale-105 hover:rotate-90 group"
               onClick={() => setSidebarOpen(false)}
             >
               <X className="h-5 w-5 transition-all duration-300 ease-out group-hover:text-indigo-600" />
             </button>
           </div>
-          
+
           <div className="py-6 px-4 space-y-4 relative z-10">
             <div className="space-y-2.5">
               <NavItem icon={<Home className="h-5 w-5" />} text="Dashboard" onClick={() => {
@@ -375,21 +366,21 @@ export default function Notifications() {
           </div>
         </div>
       </div>
-      
+
       {/* Header - Modern User-Friendly Design */}
       <header className={`bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-md border-b border-indigo-100 h-20 transition-all duration-300 ${visible ? 'translate-y-0' : '-translate-y-full'} ${sidebarOpen ? 'hidden md:block' : 'block'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="grid grid-cols-3 items-center h-full w-full">
             <div className="flex-shrink-0 pl-2 flex items-center h-full overflow-visible">
               <div className="cursor-pointer transition-all duration-300 flex items-center justify-center overflow-visible">
-                <img 
-                  src="/lovable-uploads/orielixlogo.png" 
-                  alt="Orielix Logo" 
+                <img
+                  src="/lovable-uploads/orielixlogo.png"
+                  alt="Orielix Logo"
                   className="h-[85px] -mt-2 transition-all duration-300 transform hover:scale-105"
                 />
               </div>
             </div>
-            
+
             {/* Center Navigation */}
             <div className="hidden md:flex justify-center items-center">
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-full p-1 shadow-sm border border-indigo-100">
@@ -411,7 +402,7 @@ export default function Notifications() {
             </div>
 
             <div className="hidden md:flex items-center justify-end flex-shrink-0 gap-2 lg:gap-4 mr-3 lg:mr-5">
-              <button 
+              <button
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-600 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200 relative mr-2"
                 onClick={() => navigate('/notifications')}
               >
@@ -422,7 +413,7 @@ export default function Notifications() {
                 )}
               </button>
               <div className="relative">
-                <button 
+                <button
                   className="flex items-center space-x-2 p-1.5 pl-1.5 pr-4 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200"
                   onClick={() => navigate('/user-profile')}
                 >
@@ -434,10 +425,10 @@ export default function Notifications() {
                 </button>
               </div>
             </div>
-            
+
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center justify-end col-span-2">
-              <button 
+              <button
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-600 transition-all duration-300 ease-out shadow-sm hover:shadow-md hover:scale-105 border border-indigo-100 hover:border-indigo-200 relative mr-2"
               >
                 <span className="sr-only">View notifications</span>
@@ -446,7 +437,7 @@ export default function Notifications() {
                   <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
                 )}
               </button>
-              <button 
+              <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-300 ease-out shadow-md hover:shadow-lg hover:scale-105 border border-indigo-100 hover:border-indigo-200"
               >
@@ -482,17 +473,17 @@ export default function Notifications() {
                   <BellIcon className="h-12 w-12 text-indigo-600" />
                 </div>
               </div>
-              
+
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
                     <h1 className="text-3xl font-bold text-indigo-900">Notifications</h1>
                     <p className="text-indigo-700 font-medium">Stay updated with all your activities</p>
                   </div>
-                  
+
                   <div className="flex gap-3 justify-center md:justify-end">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="bg-white/80 hover:bg-white border-indigo-200 hover:border-indigo-300 text-indigo-700"
                       onClick={markAllAsRead}
                     >
@@ -504,101 +495,101 @@ export default function Notifications() {
               </div>
             </div>
           </div>
-          
+
           {/* Notifications Content */}
           <div className="mt-6">
-              <Card className="shadow-md border-indigo-100">
-                <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-                  <CardTitle className="flex items-center gap-2 text-indigo-800">
-                    <BellIcon className="h-5 w-5" />
-                    {activeTab === "all" && "All Notifications"}
-                    {activeTab === "unread" && "Unread Notifications"}
-                    {activeTab === "messages" && "Message Notifications"}
-                    {activeTab === "mentions" && "Mentions"}
-                    {activeTab === "system" && "System Notifications"}
-                  </CardTitle>
-                  <CardDescription>
-                    {getFilteredNotifications().length} notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y divide-indigo-100">
-                    {getFilteredNotifications().length === 0 ? (
-                      <div className="py-12 flex flex-col items-center justify-center text-center">
-                        <div className="bg-indigo-50 p-4 rounded-full mb-4">
-                          <BellOff className="h-8 w-8 text-indigo-400" />
-                        </div>
-                        <h3 className="text-lg font-medium text-indigo-900 mb-1">No notifications</h3>
-                        <p className="text-indigo-600 max-w-md">
-                          {activeTab === "unread" 
-                            ? "You've read all your notifications. Check back later for updates." 
-                            : "You don't have any notifications in this category yet."}
-                        </p>
+            <Card className="shadow-md border-indigo-100">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+                <CardTitle className="flex items-center gap-2 text-indigo-800">
+                  <BellIcon className="h-5 w-5" />
+                  {activeTab === "all" && "All Notifications"}
+                  {activeTab === "unread" && "Unread Notifications"}
+                  {activeTab === "messages" && "Message Notifications"}
+                  {activeTab === "mentions" && "Mentions"}
+                  {activeTab === "system" && "System Notifications"}
+                </CardTitle>
+                <CardDescription>
+                  {getFilteredNotifications().length} notifications
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y divide-indigo-100">
+                  {getFilteredNotifications().length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="bg-indigo-50 p-4 rounded-full mb-4">
+                        <BellOff className="h-8 w-8 text-indigo-400" />
                       </div>
-                    ) : (
-                      getFilteredNotifications().map((notification) => (
-                        <div 
-                          key={notification.id} 
-                          className={`p-4 sm:p-6 hover:bg-indigo-50/50 transition-colors duration-200 relative ${!notification.read ? 'bg-indigo-50/30' : ''}`}
-                          onClick={() => markAsRead(notification.id)}
-                        >
-                          {!notification.read && (
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1/4 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                      <h3 className="text-lg font-medium text-indigo-900 mb-1">No notifications</h3>
+                      <p className="text-indigo-600 max-w-md">
+                        {activeTab === "unread"
+                          ? "You've read all your notifications. Check back later for updates."
+                          : "You don't have any notifications in this category yet."}
+                      </p>
+                    </div>
+                  ) : (
+                    getFilteredNotifications().map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`p-4 sm:p-6 hover:bg-indigo-50/50 transition-colors duration-200 relative ${!notification.read ? 'bg-indigo-50/30' : ''}`}
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        {!notification.read && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1/4 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        )}
+                        <div className="flex items-start gap-4">
+                          {notification.user ? (
+                            <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                              <AvatarImage src={notification.user.avatar} alt={notification.user.name} />
+                              <AvatarFallback>{notification.user.fallback}</AvatarFallback>
+                            </Avatar>
+                          ) : (
+                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
+                              {getNotificationIcon(notification.type)}
+                            </div>
                           )}
-                          <div className="flex items-start gap-4">
-                            {notification.user ? (
-                              <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                                <AvatarImage src={notification.user.avatar} alt={notification.user.name} />
-                                <AvatarFallback>{notification.user.fallback}</AvatarFallback>
-                              </Avatar>
-                            ) : (
-                              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
-                                {getNotificationIcon(notification.type)}
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <h4 className="text-sm font-medium text-indigo-900 line-clamp-1">{notification.title}</h4>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="text-xs text-indigo-500">{notification.time}</span>
+                                <button
+                                  className="text-gray-400 hover:text-indigo-600 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteNotification(notification.id);
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                            <p className="mt-1 text-sm text-indigo-700 line-clamp-2">{notification.description}</p>
+
+                            {notification.action && (
+                              <div className="mt-3">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(notification.actionUrl || '#');
+                                  }}
+                                >
+                                  {notification.action}
+                                  <ChevronRight className="ml-1 h-3 w-3" />
+                                </Button>
                               </div>
                             )}
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <h4 className="text-sm font-medium text-indigo-900 line-clamp-1">{notification.title}</h4>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <span className="text-xs text-indigo-500">{notification.time}</span>
-                                  <button 
-                                    className="text-gray-400 hover:text-indigo-600 transition-colors"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      deleteNotification(notification.id);
-                                    }}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </div>
-                              <p className="mt-1 text-sm text-indigo-700 line-clamp-2">{notification.description}</p>
-                              
-                              {notification.action && (
-                                <div className="mt-3">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-8 text-xs border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigate(notification.actionUrl || '#');
-                                    }}
-                                  >
-                                    {notification.action}
-                                    <ChevronRight className="ml-1 h-3 w-3" />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
                           </div>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

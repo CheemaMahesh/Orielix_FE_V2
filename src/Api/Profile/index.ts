@@ -24,6 +24,7 @@ type ProfileLoading = {
   updateEducation: boolean;
   updateAddress: boolean;
   getRankings: boolean;
+  getAllNotifications?: boolean;
 };
 
 export type MeResponse = {
@@ -79,6 +80,7 @@ export const useProfile = () => {
     updateEducation: false,
     updateAddress: false,
     getRankings: false,
+    getAllNotifications: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -462,6 +464,23 @@ export const useProfile = () => {
     }
   };
 
+  const getAllNotifications = async (userid: string) => {
+    try {
+      handleLoading("getAllNotifications", true);
+      const response = await axios.get(
+        `${config.apiUrl}/api/v1/notifications/getall/${userid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during getAllNotifications:", err);
+    } finally {
+      handleLoading("getAllNotifications", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -482,5 +501,6 @@ export const useProfile = () => {
     updateEducation,
     updateAddress,
     getRankings,
+    getAllNotifications,
   };
 };
