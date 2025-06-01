@@ -23,7 +23,7 @@ export const useCallProfileInfo = () => {
   const dispatch = useDispatch();
 
   const getAllNotificationsByToken = async (userid: string) => {
-    dispatch(setNotificationLoading(true));
+    // dispatch(setNotificationLoading(true));
     const res = await getAllNotifications(userid);
     if (res) {
       if (res.success) {
@@ -36,7 +36,7 @@ export const useCallProfileInfo = () => {
         });
       }
     }
-    dispatch(setNotificationLoading(false));
+    // dispatch(setNotificationLoading(false));
   };
 
   const getAllEventsByToken = async () => {

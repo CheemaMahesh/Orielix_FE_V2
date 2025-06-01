@@ -38,6 +38,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip
 import { DatePicker, InputNumber, Select } from "antd";
 import dayjs from "dayjs";
 import defaultProfle from "../Icons/defaultprofile.svg";
+import { ProfilePictureModal } from "@/components/Modals/ProfilePicture";
 
 const Option = Select.Option;
 
@@ -147,6 +148,7 @@ export default function UserProfile() {
   const [activeStates, setActiveStates] = useState<StateType[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [activeCities, setActiveCities] = useState<string[]>([]);
+  const [openProfilePictureModal, setOpenProfilePictureModal] = useState<boolean>(false);
 
   // const dispatch = useDispatch();
 
@@ -576,7 +578,7 @@ export default function UserProfile() {
               >
                 <div className="relative rounded-full p-1 bg-white shadow-xl">
                   <div className="relative group overflow-hidden rounded-full">
-                    <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white">
+                    <Avatar onClick={() => setOpenProfilePictureModal(true)} className="cursor-pointer h-32 w-32 md:h-40 md:w-40 border-4 border-white">
                       <AvatarImage src={userInfo?.profileImage || defaultProfle} alt="User" className="object-cover" />
                       <AvatarFallback className="text-3xl md:text-4xl">JD</AvatarFallback>
                     </Avatar>
@@ -1174,6 +1176,7 @@ export default function UserProfile() {
           {openLogout && <ConfirmLogoutModal open={openLogout} onOpenChange={setOpenLogout} />}
           <Button onClick={() => setOpenLogout(true)} className="rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white"
           >Logout</Button>
+          {openProfilePictureModal && <ProfilePictureModal open={openProfilePictureModal} onClose={() => setOpenProfilePictureModal(false)} />}
         </div>
       </main >
     </div >

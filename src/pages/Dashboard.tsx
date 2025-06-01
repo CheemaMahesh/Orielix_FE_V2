@@ -35,6 +35,7 @@ import { RegisterSession } from "@/components/Modals/RegisterSession";
 import { ShowSessionSuccess } from "@/components/Modals/ShowSessionSuccess";
 import defaultProfle from "../Icons/defaultprofile.svg"
 import { InstitutionTopRankersType, RanksType } from "@/reducers/ranks";
+import { useNotifications } from "@/hooks/useNotifications";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -107,8 +108,8 @@ export default function Dashboard() {
   // -------------------Ranks------------------------
   const ranks = useSelector((state: RootState) => state.ranks);
   const [activeRanks, setActiveRanks] = useState<InstitutionTopRankersTypeExtended[] | null>(null);
-  console.log("ranks", ranks);
-  console.log("activeRanks", activeRanks);
+  const { showNotificationStatus } = useNotifications();
+  const showNotifications = showNotificationStatus();
 
   // ---------------------------------------
 
@@ -384,7 +385,7 @@ export default function Dashboard() {
                   <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
                   <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
-                <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
+                {showNotifications && <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>}
               </button>
               <div className="relative" onClick={() => navigate('/user-profile')}>
                 <button

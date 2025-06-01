@@ -8,6 +8,7 @@ export type NotificationType = {
   userId?: string;
   isRead: boolean;
   isDeleted: boolean;
+  type: string;
 };
 
 export type NotificationState = {
@@ -22,6 +23,7 @@ const notificationsSlice = createSlice({
   initialState,
   reducers: {
     addNotifications: (state, action) => {
+      console.log("action.payload", action.payload);
       state.notifications = action.payload;
     },
     clearNotifications: (state) => {

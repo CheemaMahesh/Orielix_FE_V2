@@ -25,6 +25,9 @@ type ProfileLoading = {
   updateAddress: boolean;
   getRankings: boolean;
   getAllNotifications?: boolean;
+  markNotificationAsRead?: boolean;
+  getProfileKeys?: boolean;
+  updateImage?: boolean;
 };
 
 export type MeResponse = {
@@ -81,6 +84,9 @@ export const useProfile = () => {
     updateAddress: false,
     getRankings: false,
     getAllNotifications: false,
+    markNotificationAsRead: false,
+    getProfileKeys: false,
+    updateImage: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -481,6 +487,73 @@ export const useProfile = () => {
     }
   };
 
+  const markNotificationAsRead = async (
+    notificationId: string
+  ): Promise<{ success: boolean; message: string } | null> => {
+    try {
+      handleLoading("markNotificationAsRead", true);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/notifications/markasread/${notificationId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during markNotificationAsRead:", err);
+      return null;
+    } finally {
+      handleLoading("markNotificationAsRead", false);
+    }
+  };
+
+  const getProfileKeys = () => {
+    try {
+      // /upload/profilekeys
+      handleLoading("getProfileKeys", true);
+      const res = axios.get(`${config.apiUrl}/api/v1/user/upload/profilekeys`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res;
+    } catch (err) {
+      console.log("Error during getProfileKeys:", err);
+    } finally {
+      handleLoading("getProfileKeys", false);
+    }
+  };
+
+  const updateImage = async ({
+    profileImage,
+    id,
+  }: {
+    profileImage: string;
+    id: string;
+  }) => {
+    try {
+      handleLoading("updateImage", false);
+      const response = await axios.patch(
+        `${config.apiUrl}/api/v1/user/upload/profile`,
+        {
+          profileImage,
+          id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updateImage:", err);
+    } finally {
+      handleLoading("updateImage", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -502,5 +575,8 @@ export const useProfile = () => {
     updateAddress,
     getRankings,
     getAllNotifications,
+    markNotificationAsRead,
+    getProfileKeys,
+    updateImage,
   };
 };
