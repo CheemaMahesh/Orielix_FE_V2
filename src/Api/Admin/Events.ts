@@ -22,6 +22,7 @@ export type createEventPayloadType = {
   eventTime: string;
   eventLocation: string;
   presenterId: string;
+  duration: string | number;
 };
 
 export const useAdminEvents = () => {

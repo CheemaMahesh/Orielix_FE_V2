@@ -78,8 +78,8 @@ export const EventDetails = ({ open, onOpenChange, event, onRegister }: EventDet
                                                     </div>
                                                     <div>
                                                         <span className="text-sm font-medium text-gray-800 block">Date & Time</span>
-                                                        <span className="text-sm text-gray-600">{dayjs(event.eventDate).format("MMM DD, YYYY")}, {dayjs(event.eventTime, "HH:mm:ss").isValid()
-                                                            ? dayjs(event.eventTime, "HH:mm:ss").format("HH:mm")
+                                                        <span className="text-sm text-gray-600">{dayjs(event?.eventDate).format("MMM DD, YYYY")}, {dayjs(event?.eventTime, "HH:mm:ss").isValid()
+                                                            ? dayjs(event?.eventTime, "HH:mm:ss").format("HH:mm")
                                                             : "12:00 AM"}</span>
                                                     </div>
                                                 </div>
@@ -96,7 +96,7 @@ export const EventDetails = ({ open, onOpenChange, event, onRegister }: EventDet
                                                     </div>
                                                     <div>
                                                         <span className="text-sm font-medium text-gray-800 block">Duration</span>
-                                                        <span className="text-sm text-gray-600">{getHoursByMinutes(event?.eventTime || "0")} {event?.withbreaks ? "(with breaks)" : "(without breaks)"}</span>
+                                                        <span className="text-sm text-gray-600">{getHoursByMinutes(event?.duration || "0")} {event?.withbreaks ? "(with breaks)" : "(without breaks)"}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -118,12 +118,12 @@ export const EventDetails = ({ open, onOpenChange, event, onRegister }: EventDet
 
                                             <div className="flex items-center gap-4 mb-4 relative z-10">
                                                 <Avatar className="h-16 w-16 border-2 border-white shadow-lg group-hover:scale-105 transition-all duration-300">
-                                                    <AvatarImage src={event.presenter?.profileImage} />
-                                                    <AvatarFallback>{event.presenter?.profileImage}</AvatarFallback>
+                                                    <AvatarImage src={event?.presenter?.profileImage} />
+                                                    <AvatarFallback>{event?.presenter?.profileImage}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <h4 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">{event.presenter.firstName}</h4>
-                                                    <p className="text-sm text-gray-600">{event.presenter.designation}</p>
+                                                    <h4 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">{event?.presenter?.firstName}</h4>
+                                                    <p className="text-sm text-gray-600">{event?.presenter?.designation}</p>
                                                 </div>
                                             </div>
                                             <p className="text-sm text-gray-600 relative z-10">

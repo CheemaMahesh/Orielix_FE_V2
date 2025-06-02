@@ -40,14 +40,14 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
 
     const handleUpdateEvent = async () => {
         try {
-            if (!event.eventName || !event.eventDescription || !event.eventDate || !event.eventImage || !event.eventTime) {
+            if (!event.eventName || !event.eventDescription || !event.eventDate || !event.eventImage || !event.eventTime || !event.duration) {
                 toast({
                     title: "Please fill all the fields",
                     variant: "destructive",
                 });
                 return;
             }
-            const { eventName, eventDate, eventDescription, presenterId, eventImage, eventTime, eventLocation, id } = event;
+            const { eventName, eventDate, eventDescription, presenterId, eventImage, eventTime, eventLocation, id, duration } = event;
             const payload = {
                 eventName,
                 eventDate,
@@ -56,7 +56,8 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                 eventImage,
                 eventTime,
                 eventLocation,
-                eventId: id
+                eventId: id,
+                duration,
             }
             await EditEvent(payload);
             getAllEventsByToken();
@@ -117,6 +118,13 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                                     e.preventDefault();
                                     updateEvent({ type: "eventTime", value: e.target.value })
                                 }} id="eventTime" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <label htmlFor="duration" className='text-sm font-semibold'>Event Duration</label>
+                                <input value={event?.duration} type="number" required onChange={(e) => {
+                                    e.preventDefault();
+                                    updateEvent({ type: "duration", value: e.target.value })
+                                }} id="duration" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="eventLocation" className='text-sm font-semibold'>Event Location</label>

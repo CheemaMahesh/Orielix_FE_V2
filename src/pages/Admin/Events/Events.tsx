@@ -21,6 +21,7 @@ export const Events = () => {
         setSelectedEvent(event);
         setOpenDelete(true);
     }
+    console.log("selectedEvent", selectedEvent);
 
     const handleEditEvent = (event: EventType) => {
         setSelectedEvent(event);
@@ -36,7 +37,7 @@ export const Events = () => {
             })}</div>
             <div className="w-full flex justify-end items-center p-1">
                 <Button onClick={() => setOpenCreate(true)}>Add an Event</Button>
-                <AddEvent open={openCreate} onOpenChange={setOpenCreate} />
+                <AddEvent open={openCreate} onOpenChange={setOpenCreate} onSuccess={() => setOpenCreate(false)} />
                 <DeleteEvent open={openDelete} onOpenChange={setOpenDelete} onSuccess={() => setOpenDelete(false)} title={selectedEvent?.eventName} id={selectedEvent?.id} />
                 <EditEvent onEventChange={setSelectedEvent} open={openEdit} event={selectedEvent} onOpenChange={setOpenEdit} onSuccess={() => setOpenEdit(false)} />
             </div>

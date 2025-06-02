@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { Button } from '../../ui/button';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useCallProfileInfo } from '@/hooks/Profile';
 import { useToast } from '@/hooks/use-toast';
 import { useAdminEvents } from '@/Api/Admin/Events';
@@ -10,6 +10,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
+import { message } from 'antd';
+import { upload } from '@imagekit/react';
+import { useProfile } from '@/Api/Profile';
 
 interface JoinEventProps {
     open: boolean;
@@ -25,13 +28,18 @@ const EVENT_INITIAL_STATE: createEventPayloadType = {
     eventTime: "",
     eventLocation: "",
     presenterId: "",
+    duration: "",
 };
 
 export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
     const [currentEvent, setCurrentEvent] = useState<createEventPayloadType>(EVENT_INITIAL_STATE);
     const { getAllEventsByToken } = useCallProfileInfo();
     const { toast } = useToast();
-    const { user: users } = useSelector((state: RootState) => state.allUserSlice)
+    const { user: users } = useSelector((state: RootState) => state.allUserSlice);
+
+    const [preview, setPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { getProfileKeys } = useProfile();
 
     const { createEvent, isLoading } = useAdminEvents();
 
@@ -41,6 +49,40 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
             [type]: value
         }))
     }
+
+    const handleUpload = async () => {
+        const file = fileInputRef.current?.files?.[0];
+        if (!file) return;
+
+        try {
+            const { signature, expire, token, publicKey } = (await getProfileKeys()).data;
+            const response = await upload({
+                file,
+                fileName: file.name,
+                signature,
+                expire,
+                token,
+                publicKey,
+            });
+            updateIntrest({ type: "eventImage", value: response.url })
+        } catch (err) {
+            console.error(err);
+        };
+    }
+
+    const uploadAnBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.size > 5 * 1024 * 1024) {
+            message.error("File size should be less than or equal to 5MB");
+            setPreview(null);
+            fileInputRef.current!.value = "";
+            return;
+        }
+        if (file) {
+            setPreview(URL.createObjectURL(file));
+            handleUpload();
+        }
+    };
 
     const filteredUsers = users.filter((user) => user.userType === "presenter" || user.userType === "admin" || user.userType === "superAdmin" || user.userType === "ta");
 
@@ -105,8 +147,18 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                                 <label htmlFor="eventImage" className='text-sm font-semibold'>Event Image</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateIntrest({ type: "eventImage", value: e.target.value })
-                                }} id="eventImage" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    uploadAnBanner(e);
+                                }} id="eventImage" ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="mb-4" />
+                                {preview && (
+                                    <img
+                                        src={preview}
+                                        alt="Preview"
+                                        className="mb-4 w-32 h-32 rounded object-cover aspect-square"
+                                    />
+                                )}
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="eventTime" className='text-sm font-semibold'>Event Time</label>
@@ -121,6 +173,13 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                                     e.preventDefault();
                                     updateIntrest({ type: "eventLocation", value: e.target.value })
                                 }} id="eventLocation" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <label htmlFor="duration" className='text-sm font-semibold'>Event Duration</label>
+                                <input required onChange={(e) => {
+                                    e.preventDefault();
+                                    updateIntrest({ type: "duration", value: e.target.value })
+                                }} id="duration" placeholder='Enter Intrest Description' type="number" className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="e" className='text-sm font-semibold'>Event Presenter</label>

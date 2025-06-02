@@ -578,19 +578,25 @@ export default function UserProfile() {
               >
                 <div className="relative rounded-full p-1 bg-white shadow-xl">
                   <div className="relative group overflow-hidden rounded-full">
-                    <Avatar onClick={() => setOpenProfilePictureModal(true)} className="cursor-pointer h-32 w-32 md:h-40 md:w-40 border-4 border-white">
-                      <AvatarImage src={userInfo?.profileImage || defaultProfle} alt="User" className="object-cover" />
+                    <Avatar
+                      onClick={() => setOpenProfilePictureModal(true)}
+                      className="cursor-pointer h-32 w-32 md:h-40 md:w-40 border-4 border-white"
+                    >
+                      <AvatarImage
+                        src={userInfo?.profileImage || defaultProfle}
+                        alt="User"
+                        className="object-cover"
+                      />
                       <AvatarFallback className="text-3xl md:text-4xl">JD</AvatarFallback>
                     </Avatar>
-                    {editMode && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 bg-black/50 flex items-center justify-center cursor-pointer"
-                      >
-                        <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                      </motion.div>
-                    )}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center cursor-pointer transition-opacity"
+                      onClick={() => setOpenProfilePictureModal(true)}
+                    >
+                      <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                    </motion.div>
                   </div>
                 </div>
 

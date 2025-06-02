@@ -1,5 +1,6 @@
 export const useFunctionDirectory = () => {
     const getHoursByMinutes = (minutes: string) => {
+        console.log("getHoursByMinutes called with:", minutes);
         const totalMinutes = parseInt(minutes, 10);
         if (isNaN(totalMinutes)) {
             return "Invalid input";

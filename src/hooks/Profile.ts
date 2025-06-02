@@ -39,6 +39,17 @@ export const useCallProfileInfo = () => {
     // dispatch(setNotificationLoading(false));
   };
 
+  const callOnlyMe = async () => {
+    const res = await getMe();
+    if (res) {
+      if (res.success) {
+        dispatch(addUser({ user: res.user }));
+      }
+    } else {
+      console.log("Error fetching user data");
+    }
+  };
+
   const getAllEventsByToken = async () => {
     dispatch(setEventLoading(true));
     const res = await getAllEvents();
@@ -113,5 +124,6 @@ export const useCallProfileInfo = () => {
     getAllRolesByToken,
     getAllRankingsByToken,
     getAllNotificationsByToken,
+    callOnlyMe,
   };
 };
