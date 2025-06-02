@@ -5,10 +5,13 @@ import { useToast } from '@/hooks/use-toast';
 import { RootState } from '@/store';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '../../ui/button';
 import { createSessionPayloadType, useAdminSessions } from '@/Api/Admin/Sessions';
+import { upload } from '@imagekit/react';
+import { message } from 'antd';
+import { useProfile } from '@/Api/Profile';
 
 interface JoinSessionProps {
     open: boolean;
@@ -34,6 +37,11 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
     const { toast } = useToast();
     const { user: users } = useSelector((state: RootState) => state.allUserSlice);
 
+    const [preview, setPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { getProfileKeys } = useProfile();
+
+
     const { createSession, isLoading } = useAdminSessions();
     const updateSession = ({ type, value }: { type: string, value: string }) => {
         setCurrentSession((prev) => ({
@@ -41,6 +49,40 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
             [type]: value
         }))
     }
+
+    const handleUpload = async () => {
+        const file = fileInputRef.current?.files?.[0];
+        if (!file) return;
+
+        try {
+            const { signature, expire, token, publicKey } = (await getProfileKeys()).data;
+            const response = await upload({
+                file,
+                fileName: file.name,
+                signature,
+                expire,
+                token,
+                publicKey,
+            });
+            updateSession({ type: "image", value: response.url })
+        } catch (err) {
+            console.error(err);
+        };
+    }
+
+    const uploadAnBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.size > 5 * 1024 * 1024) {
+            message.error("File size should be less than or equal to 5MB");
+            setPreview(null);
+            fileInputRef.current!.value = "";
+            return;
+        }
+        if (file) {
+            setPreview(URL.createObjectURL(file));
+            handleUpload();
+        }
+    };
 
     const filteredUsers = users.filter((user) => user.userType === "presenter" || user.userType === "admin" || user.userType === "superAdmin" || user.userType === "ta");
 
@@ -105,8 +147,18 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
                                 <label htmlFor="image" className='text-sm font-semibold'>Session Image</label>
                                 <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateSession({ type: "image", value: e.target.value })
-                                }} id="image" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    uploadAnBanner(e);
+                                }} id="image" ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="mb-4" />
+                                {preview && (
+                                    <img
+                                        src={preview}
+                                        alt="Preview"
+                                        className="mb-4 w-32 h-32 rounded object-cover aspect-square"
+                                    />
+                                )}
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="time" className='text-sm font-semibold'>Session Time</label>
