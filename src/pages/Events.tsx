@@ -25,7 +25,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { LeaveEvent } from "@/components/Modals/LeaveEvent";
 import { Session } from "@/components/Skeliton/Session";
-import defaultProfle from "../Icons/defaultprofile.svg"
+import defaultProfle from "../Icons/defaultprofile.svg";
+import { eventTypes } from "@/lib/constants";
 
 // Define the Event type based on the eventData structure
 interface Presenter {
@@ -95,7 +96,6 @@ export default function Events() {
   const [leaveEventModalOpen, setLeaveEventModalOpen] = useState<boolean>(false);
   const isEventLoading = useSelector((state: RootState) => state.eventSlice.loading);
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
-
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -415,39 +415,9 @@ export default function Events() {
                                 </SelectItem>
                               </div>
                               <div className="space-y-1 px-1">
-                                <SelectItem value="orielix-officials" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Orielix Officials</span>
-                                </SelectItem>
-                                <SelectItem value="technology" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Technology</span>
-                                </SelectItem>
-                                <SelectItem value="startup" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Startup</span>
-                                </SelectItem>
-                                <SelectItem value="game-development" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Game Development</span>
-                                </SelectItem>
-                                <SelectItem value="graphic-design" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Graphic Design</span>
-                                </SelectItem>
-                                <SelectItem value="ui-ux" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">UI/UX</span>
-                                </SelectItem>
-                                <SelectItem value="animation" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Animation</span>
-                                </SelectItem>
-                                <SelectItem value="editing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Editing</span>
-                                </SelectItem>
-                                <SelectItem value="content-writing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Content Writing</span>
-                                </SelectItem>
-                                <SelectItem value="marketing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Marketing</span>
-                                </SelectItem>
-                                <SelectItem value="other" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Other</span>
-                                </SelectItem>
+                                {eventTypes?.map((item) => (<SelectItem value={item} className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
+                                  <span className="ml-2">{item}</span>
+                                </SelectItem>))}
                               </div>
                             </SelectContent>
                           </Select>

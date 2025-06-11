@@ -1,16 +1,17 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
-import { Button } from '../../ui/button';
-import { useState } from 'react';
+import { useAdminEvents } from '@/Api/Admin/Events';
+import { useProfile } from '@/Api/Profile';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { useCallProfileInfo } from '@/hooks/Profile';
 import { useToast } from '@/hooks/use-toast';
-import { useAdminEvents } from '@/Api/Admin/Events';
-import { createEventPayloadType } from '@/Api/Admin/Events';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { EventType } from '@/reducers/events';
+import { RootState } from '@/store';
+import { upload } from '@imagekit/react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { Button } from '../../ui/button';
+import { message } from 'antd';
 
 interface JoinEventProps {
     open: boolean;
@@ -26,6 +27,8 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
     const { user: users } = useSelector((state: RootState) => state.allUserSlice)
 
     const { EditEvent, isLoading } = useAdminEvents();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { getProfileKeys } = useProfile();
 
     const updateEvent = ({ type, value }: { type: string, value: string }) => {
         if (event) {
@@ -35,6 +38,38 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
             })
         }
     }
+
+    const handleUpload = async () => {
+        const file = fileInputRef.current?.files?.[0];
+        if (!file) return;
+
+        try {
+            const { signature, expire, token, publicKey } = (await getProfileKeys()).data;
+            const response = await upload({
+                file,
+                fileName: file.name,
+                signature,
+                expire,
+                token,
+                publicKey,
+            });
+            updateEvent({ type: "eventImage", value: response.url })
+        } catch (err) {
+            console.error(err);
+        };
+    }
+
+    const uploadAnBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.size > 5 * 1024 * 1024) {
+            message.error("File size should be less than or equal to 5MB");
+            fileInputRef.current!.value = "";
+            return;
+        }
+        if (file) {
+            handleUpload();
+        }
+    };
 
     const filteredUsers = users.filter((user) => user.userType === "presenter" || user.userType === "admin" || user.userType === "superAdmin" || user.userType === "ta");
 
@@ -107,10 +142,22 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="eventImage" className='text-sm font-semibold'>Event Image</label>
-                                <input value={event?.eventImage} required onChange={(e) => {
+                                <input required onChange={(e) => {
                                     e.preventDefault();
-                                    updateEvent({ type: "eventImage", value: e.target.value })
-                                }} id="eventImage" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                    uploadAnBanner(e);
+                                }} id="eventImage" ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="mb-4"
+                                    placeholder='Upload Event Image'
+                                />
+                                {event?.eventImage && (
+                                    <img
+                                        src={event?.eventImage}
+                                        alt="Preview"
+                                        className="mb-4 w-32 h-32 rounded object-cover aspect-square"
+                                    />
+                                )}
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="eventTime" className='text-sm font-semibold'>Event Time</label>

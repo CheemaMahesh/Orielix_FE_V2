@@ -1,18 +1,17 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
-import { Button } from '../../ui/button';
-import { useRef, useState } from 'react';
+import { createEventPayloadType, useAdminEvents } from '@/Api/Admin/Events';
+import { useProfile } from '@/Api/Profile';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { useCallProfileInfo } from '@/hooks/Profile';
 import { useToast } from '@/hooks/use-toast';
-import { useAdminEvents } from '@/Api/Admin/Events';
-import { createEventPayloadType } from '@/Api/Admin/Events';
-import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
-import { message } from 'antd';
 import { upload } from '@imagekit/react';
-import { useProfile } from '@/Api/Profile';
+import * as Dialog from '@radix-ui/react-dialog';
+import { message } from 'antd';
+import { X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Button } from '../../ui/button';
+import { eventTypes } from '@/lib/constants';
 
 interface JoinEventProps {
     open: boolean;
@@ -29,6 +28,7 @@ const EVENT_INITIAL_STATE: createEventPayloadType = {
     eventLocation: "",
     presenterId: "",
     duration: "",
+    eventType: "",
 };
 
 export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
@@ -198,7 +198,22 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            {/* ----------------------------------- */}
+                            <div className='flex flex-col gap-2'>
+                                <label htmlFor="e" className='text-sm font-semibold'>Event Type</label>
+                                <Select
+                                    value={currentEvent.eventType || ""}
+                                    onValueChange={(value) => updateIntrest({ type: "eventType", value })}
+                                >
+                                    <SelectTrigger>{currentEvent?.eventType || "Select Event Type"}</SelectTrigger>
+                                    <SelectContent>
+                                        {eventTypes?.map((item) => (
+                                            <SelectItem value={item} key={item}>
+                                                <div className='text-black font-semibold cursor-pointer'>{item}</div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     </section>
                     <Dialog.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
