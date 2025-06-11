@@ -5,6 +5,8 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import defaultProfle from "../Icons/defaultprofile.svg"
+import { useDispatch } from "react-redux";
+import { setSliderValue } from "@/reducers/slider";
 
 export const MainNav = ({ type }: { type: string }) => {
     const navigate = useNavigate();
@@ -12,8 +14,11 @@ export const MainNav = ({ type }: { type: string }) => {
     const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
     const { showNotificationStatus } = useNotifications();
     const showNotifications = showNotificationStatus();
+
+    const { open: sidebarOpen } = useSelector((state: RootState) => state.slider);
+    const dispatch = useDispatch();
+
     // /----------÷-------------------------------
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [visible, setVisible] = useState(true);
     // /----------÷-------------------------------
 
@@ -132,7 +137,7 @@ export const MainNav = ({ type }: { type: string }) => {
                                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 ring-1 ring-white"></span>
                             </button>
                             <button
-                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                onClick={() => dispatch(setSliderValue(true))}
                                 className="p-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-300 ease-out shadow-md hover:shadow-lg hover:scale-105 border border-indigo-100 hover:border-indigo-200"
                             >
                                 <span className="sr-only">Toggle menu</span>

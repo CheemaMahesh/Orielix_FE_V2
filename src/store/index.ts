@@ -8,6 +8,7 @@ import allUserSlice from "../reducers/users";
 import countriesSlice from "../reducers/countries";
 import ranksSlice from "../reducers/ranks";
 import notificationsSlice from "../reducers/notifications";
+import sliderSlice from "../reducers/slider";
 
 // You'll add reducers here later
 const store = configureStore({
@@ -20,6 +21,7 @@ const store = configureStore({
     countries: countriesSlice,
     ranks: ranksSlice,
     notifications: notificationsSlice,
+    slider: sliderSlice,
   },
   // Adding middleware for RTK-Query if needed
   middleware: (getDefaultMiddleware) =>

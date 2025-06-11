@@ -28,6 +28,7 @@ import { Session } from "@/components/Skeliton/Session";
 import defaultProfle from "../Icons/defaultprofile.svg";
 import { eventTypes } from "@/lib/constants";
 import { MainNav } from "./MainNav";
+import { MainSlider } from "./MainSlider";
 
 // Define the Event type based on the eventData structure
 interface Presenter {
@@ -134,69 +135,7 @@ export default function Events() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       {/* Sidebar */}
-      <div className={`fixed inset-0 z-50 transition-all duration-300 ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        {/* Overlay */}
-        <div
-          className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-500 ease-in-out"
-          style={{ opacity: sidebarOpen ? 1 : 0 }}
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-
-        {/* Sidebar */}
-        <div className={`absolute left-0 top-0 h-full w-[300px] bg-gradient-to-b from-indigo-100/95 via-purple-50/90 to-indigo-100/95 shadow-2xl backdrop-blur-sm transform transition-all duration-500 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-indigo-200/30 rounded-r-3xl`}>
-          {/* Decorative elements */}
-          <div className="absolute inset-0 overflow-hidden rounded-r-3xl">
-            <div className="absolute h-40 w-40 -top-10 -right-10 bg-purple-300/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute h-60 w-60 bottom-20 -left-20 bg-indigo-300/30 rounded-full blur-3xl opacity-70"></div>
-            <div className="absolute h-20 w-20 top-1/2 right-10 bg-purple-400/20 rounded-full blur-xl animate-pulse opacity-80"></div>
-          </div>
-
-          <div className="p-5 flex justify-between items-center border-b border-indigo-200/50 relative z-10">
-            <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Navigation</h3>
-            <button
-              className="p-2 rounded-full bg-white/80 hover:bg-white text-indigo-500 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ease-out hover:scale-105 hover:rotate-90 group"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="h-5 w-5 transition-all duration-300 ease-out group-hover:text-indigo-600" />
-            </button>
-          </div>
-
-          <div className="py-6 px-4 space-y-4 relative z-10">
-            <div className="space-y-2.5">
-              <NavItem icon={<HomeIcon className="h-5 w-5" />} text="Dashboard" onClick={() => {
-                navigate('/dashboard');
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-              <NavItem icon={<CalendarIcon className="h-5 w-5" />} text="Events" active onClick={() => {
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-              <NavItem icon={<BookOpenIcon className="h-5 w-5" />} text="Sessions" onClick={() => {
-                navigate('/sessions');
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-              <NavItem icon={<UsersIcon className="h-5 w-5" />} text="Community" onClick={() => {
-                navigate('/community');
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-              <NavItem icon={<User className="h-5 w-5" />} text="Profile" onClick={() => {
-                navigate('/user-profile');
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-              <NavItem icon={<LogOut className="h-5 w-5" />} text="Logout" onClick={() => {
-                // In a real app, you would handle logout logic here
-                navigate('/login');
-                window.scrollTo(0, 0);
-                setSidebarOpen(false);
-              }} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <MainSlider />
 
       {/* Header - Modern User-Friendly Design */}
       <MainNav type="events" />
