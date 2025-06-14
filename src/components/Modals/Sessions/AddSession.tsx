@@ -12,7 +12,7 @@ import { createSessionPayloadType, useAdminSessions } from '@/Api/Admin/Sessions
 import { upload } from '@imagekit/react';
 import { message } from 'antd';
 import { useProfile } from '@/Api/Profile';
-
+import { sessionCategories, sessionTypes } from '@/lib/constants';
 interface JoinSessionProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -29,6 +29,8 @@ const SESSION_INITIAL_STATE: createSessionPayloadType = {
     presenterId: "",
     duration: "",
     id: "",
+    category: "",
+    type: "",
 };
 
 export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) => {
@@ -44,6 +46,7 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
 
     const { createSession, isLoading } = useAdminSessions();
     const updateSession = ({ type, value }: { type: string, value: string }) => {
+        console.log("type:", type, "value:", value);
         setCurrentSession((prev) => ({
             ...prev,
             [type]: value
@@ -98,7 +101,7 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
             await createSession({
                 payload: currentSession,
             });
-            getAllSessionsByToken();
+            getAllSessionsByToken({ category: undefined, type: undefined });
             onSuccess?.();
         } catch (error) {
             console.error("Error creating intrest:", error);
@@ -106,6 +109,8 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
     }
 
     const selectedPresenter = filteredUsers.find((user) => user.id.toString() === currentSession.presenterId);
+
+    console.log("Current Session:", currentSession);
 
     return (
         < Dialog.Root open={open} onOpenChange={onOpenChange} >
@@ -198,6 +203,37 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
                                     updateSession({ type: "duration", value: e.target.value })
                                 }} id="duration" placeholder='Enter Session Duration' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
+
+                            {/* -------- */}
+                            <Select
+                                value={currentSession.category || ""}
+                                onValueChange={(value) => updateSession({ type: "category", value })}
+                            >
+                                <SelectTrigger>{currentSession.category || "Select Session Category"}</SelectTrigger>
+                                <SelectContent>
+                                    {sessionCategories?.map((category) => (
+                                        <SelectItem value={category} key={category}>
+                                            {category}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <Select
+                                value={currentSession.type || ""}
+                                onValueChange={(value) => updateSession({ type: "type", value })}
+                            >
+                                <SelectTrigger>{currentSession.type || "Select Session Type"}</SelectTrigger>
+                                <SelectContent>
+                                    {sessionTypes?.map((type) => (
+                                        <SelectItem value={type} key={type}>
+                                            {type}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {/* ---------- */}
+
                             {/* ----------------------------------- */}
                         </div>
                     </section>

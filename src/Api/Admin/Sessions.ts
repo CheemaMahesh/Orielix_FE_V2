@@ -24,6 +24,8 @@ export type createSessionPayloadType = {
   presenterId: string;
   duration: string;
   id: string;
+  category?: string;
+  type?: string;
 };
 
 export const useAdminSessions = () => {

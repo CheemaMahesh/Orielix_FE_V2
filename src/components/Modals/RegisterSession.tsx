@@ -28,7 +28,7 @@ export const RegisterSession = ({ open, onOpenChange, session, onSuccess }: Regi
             const res = await joinSession(session?.id);
             if (res?.success) {
                 onOpenChange(false);
-                getAllSessionsByToken();
+                getAllSessionsByToken({ category: undefined, type: undefined });
                 onSuccess();
             }
         } catch (err) {

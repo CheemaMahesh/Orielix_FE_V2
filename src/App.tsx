@@ -72,7 +72,7 @@ const App = () => {
       getAllEventsByToken({ type: undefined });
     }
     if (!sessionLoading && (!sessions || sessions.length === 0) && token) {
-      getAllSessionsByToken();
+      getAllSessionsByToken({ category: undefined, type: undefined });
     }
     if (!intrestLoading && (!intrests || intrests.length === 0) && token) {
       getAllIntrestsByToken();

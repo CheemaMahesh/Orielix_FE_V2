@@ -12,6 +12,7 @@ import { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '../../ui/button';
 import { message } from 'antd';
+import { eventTypes } from '@/lib/constants';
 
 interface JoinEventProps {
     open: boolean;
@@ -75,14 +76,14 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
 
     const handleUpdateEvent = async () => {
         try {
-            if (!event.eventName || !event.eventDescription || !event.eventDate || !event.eventImage || !event.eventTime || !event.duration) {
+            if (!event.eventName || !event.eventDescription || !event.eventDate || !event.eventImage || !event.eventTime || !event.duration || !event.eventType) {
                 toast({
                     title: "Please fill all the fields",
                     variant: "destructive",
                 });
                 return;
             }
-            const { eventName, eventDate, eventDescription, presenterId, eventImage, eventTime, eventLocation, id, duration } = event;
+            const { eventName, eventDate, eventDescription, presenterId, eventImage, eventTime, eventLocation, id, duration, eventType } = event;
             const payload = {
                 eventName,
                 eventDate,
@@ -93,6 +94,7 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                 eventLocation,
                 eventId: id,
                 duration,
+                eventType,
             }
             await EditEvent(payload);
             getAllEventsByToken({ type: undefined });
@@ -193,6 +195,22 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                                                 <div className='text-black font-semibold'>{user.username || user.firstName}</div>
                                                 <div className='text-gray-700 text-xs'>{user.email}</div>
                                             </div></SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <label htmlFor="e" className='text-sm font-semibold'>Event Type</label>
+                                <Select
+                                    value={event?.eventType || ""}
+                                    onValueChange={(value) => updateEvent({ type: "eventType", value })}
+                                >
+                                    <SelectTrigger>{event?.eventType || "Select Event Type"}</SelectTrigger>
+                                    <SelectContent>
+                                        {eventTypes?.map((item) => (
+                                            <SelectItem value={item} key={item}>
+                                                <div className='text-black font-semibold cursor-pointer'>{item}</div>
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>

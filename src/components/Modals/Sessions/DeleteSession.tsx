@@ -24,7 +24,7 @@ export const DeleteSession = ({ open, onOpenChange, onSuccess, title, id }: Dele
             e.preventDefault();
             const res = await deleteSession(id as string);
             if (res && res.success) {
-                getAllSessionsByToken();
+                getAllSessionsByToken({ category: undefined, type: undefined });
                 onSuccess?.();
                 toast({
                     title: "Event Deleted",

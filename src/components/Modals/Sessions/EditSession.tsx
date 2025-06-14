@@ -7,6 +7,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { Button } from '../../ui/button';
+import { sessionCategories, sessionTypes } from '@/lib/constants';
 
 interface JoinSessionProps {
     open: boolean;
@@ -35,8 +36,8 @@ export const EditSession = ({ open, onOpenChange, onSuccess, currentSession, set
 
     const handleEditSession = async () => {
         try {
-            const { name, description, presenterId, id, date, time, image, location, duration } = currentSession;
-            if (!name || !description || !date || !image || !time || !presenterId || !location || !duration) {
+            const { name, description, presenterId, id, date, time, image, location, duration, category, type } = currentSession;
+            if (!name || !description || !date || !image || !time || !presenterId || !location || !duration || !category || !type) {
                 toast({
                     title: "Please fill all the fields",
                     variant: "destructive",
@@ -51,10 +52,12 @@ export const EditSession = ({ open, onOpenChange, onSuccess, currentSession, set
                 location,
                 presenterId,
                 duration,
-                sessionId: id
+                sessionId: id,
+                category,
+                type,
             }
             await editSession(payload);
-            getAllSessionsByToken();
+            getAllSessionsByToken({ category: undefined, type: undefined });
             onSuccess?.();
         } catch (error) {
             console.error("Error creating intrest:", error);
@@ -118,7 +121,7 @@ export const EditSession = ({ open, onOpenChange, onSuccess, currentSession, set
                                 <input value={currentSession?.location} required onChange={(e) => {
                                     e.preventDefault();
                                     updateSession({ type: "location", value: e.target.value })
-                                }} id="location" placeholder='Enter Intrest Description' className='border-2 border-gray-300 rounded-lg p-2' />
+                                }} id="location" placeholder='Enter Session Location' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
                             <div className='flex flex-col gap-2'>
                                 <label htmlFor="e" className='text-sm font-semibold'>Session Presenter</label>
@@ -144,6 +147,34 @@ export const EditSession = ({ open, onOpenChange, onSuccess, currentSession, set
                                     updateSession({ type: "duration", value: e.target.value })
                                 }} id="duration" placeholder='Enter Session Duration' className='border-2 border-gray-300 rounded-lg p-2' />
                             </div>
+
+                            <Select
+                                value={currentSession.category || ""}
+                                onValueChange={(value) => updateSession({ type: "category", value })}
+                            >
+                                <SelectTrigger>{currentSession.category || "Select Session Category"}</SelectTrigger>
+                                <SelectContent>
+                                    {sessionCategories?.map((category) => (
+                                        <SelectItem value={category} key={category}>
+                                            {category}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <Select
+                                value={currentSession.type || ""}
+                                onValueChange={(value) => updateSession({ type: "type", value })}
+                            >
+                                <SelectTrigger>{currentSession.type || "Select Session Type"}</SelectTrigger>
+                                <SelectContent>
+                                    {sessionTypes?.map((type) => (
+                                        <SelectItem value={type} key={type}>
+                                            {type}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             {/* ----------------------------------- */}
                         </div>
                     </section>
