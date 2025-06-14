@@ -63,6 +63,18 @@ export default function Dashboard() {
   const { events, loading: isEventLoading } = useSelector((state: RootState) => state.eventSlice);
   const { sessions, loading: isSessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
 
+  const joinedEvents = events?.filter((event: EventType) => event.joined);
+  const joinedSessions = sessions?.filter((session: SessionType) => session.joined);
+
+  const upcomingEvents = [...joinedEvents, ...joinedSessions];
+  const sortedUpcomingEvents = upcomingEvents?.slice().sort(
+    (a, b) => {
+      const dateA = 'eventDate' in a ? a.eventDate : a.date;
+      const dateB = 'eventDate' in b ? b.eventDate : b.date;
+      return new Date(dateA).getTime() - new Date(dateB).getTime();
+    }
+  );
+
   // -------------------Ranks------------------------
   const ranks = useSelector((state: RootState) => state.ranks);
   const [activeRanks, setActiveRanks] = useState<InstitutionTopRankersTypeExtended[] | null>(null);
@@ -197,6 +209,22 @@ export default function Dashboard() {
     }
   }
 
+  const getDaysRemaining = (date: string) => {
+    const targetDate = new Date(date);
+    const today = new Date();
+    // Set both dates to midnight for accurate day comparison
+    targetDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const timeDiff = targetDate.getTime() - today.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    if (daysRemaining === 0) return "Today";
+    if (daysRemaining === 1) return "Tomorrow";
+    if (daysRemaining > 1) return `${daysRemaining} days`;
+    return "Event has passed";
+  };
+
   useEffect(() => {
     setUpRankings();
   }, [activeTab, ranks]);
@@ -218,7 +246,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-[50vh] bg-gradient-to-b from-purple-50 to-white">
       {/* Sidebar */}
       <MainSlider />
 
@@ -242,7 +270,7 @@ export default function Dashboard() {
                   <div className="absolute w-[400px] h-[400px] -bottom-[200px] -left-[100px] bg-indigo-300/20 rounded-full blur-3xl"></div>
                 </div>
 
-                <CardContent className="p-0 relative z-10">
+                <CardContent className="p-0 relative z-10 max-h-[80vh]">
                   {/* Welcome Section */}
                   <div className="pt-8 px-8 text-center">
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -429,13 +457,8 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Tabs Section */}
-              <div className="space-y-5">
-                {/* Content removed */}
-
-                {/* Progress Metrics Section - New Style */}
+              {/* <div className="space-y-5">
                 <Card className="border-0 rounded-3xl overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 text-gray-800 shadow-xl relative">
-                  {/* Decorative elements */}
                   <div className="absolute inset-0 overflow-hidden">
                     <div className="absolute h-40 w-40 -top-10 -right-10 bg-purple-500/20 rounded-full blur-3xl"></div>
                     <div className="absolute h-40 w-40 -bottom-10 -left-10 bg-indigo-500/20 rounded-full blur-3xl"></div>
@@ -457,7 +480,6 @@ export default function Dashboard() {
 
                   <CardContent className="px-4 sm:px-6 py-5 relative z-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      {/* Events Participated */}
                       <div className="relative p-5 bg-gradient-to-br from-white/90 to-purple-50 rounded-2xl backdrop-blur-sm border border-purple-100 hover:border-[#58C7F3]/50 hover:shadow-[0_0_20px_rgba(88,199,243,0.2)] transition-all duration-300 overflow-hidden group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-[#58C7F3]/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8 group-hover:bg-[#58C7F3]/20 transition-all duration-500"></div>
 
@@ -468,12 +490,11 @@ export default function Dashboard() {
                           <span className="text-base font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-300">Events</span>
                         </div>
                         <div className="flex flex-col items-center mt-2">
-                          <span className="text-5xl font-bold text-gray-800 group-hover:text-[#58C7F3] transition-colors duration-300">8</span>
+                          <span className="text-5xl font-bold text-gray-800 group-hover:text-[#58C7F3] transition-colors duration-300">{events?.length}</span>
                           <span className="text-sm font-medium text-gray-500 mt-1 group-hover:text-gray-600 transition-colors duration-300 bg-white/50 px-2.5 py-1 rounded-full">Participated</span>
                         </div>
                       </div>
 
-                      {/* Sessions Attended */}
                       <div className="relative p-5 bg-gradient-to-br from-white/90 to-purple-50 rounded-2xl backdrop-blur-sm border border-purple-100 hover:border-[#62DDBD]/50 hover:shadow-[0_0_20px_rgba(98,221,189,0.2)] transition-all duration-300 overflow-hidden group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-[#62DDBD]/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8 group-hover:bg-[#62DDBD]/20 transition-all duration-500"></div>
 
@@ -491,14 +512,12 @@ export default function Dashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
+              </div> */}
             </div>
 
-            {/* Right Column */}
             <div className="space-y-8 flex flex-col h-full">
-              {/* Modern Calendar */}
               <Card className="border-0 shadow-xl bg-gradient-to-b from-purple-50/90 to-indigo-50/90 backdrop-blur-md rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 flex-1 flex flex-col">
-                <CardHeader className="pb-5 pt-6 border-b border-indigo-100/50 bg-gradient-to-r from-purple-100/80 via-indigo-50/90 to-purple-50/80">
+                {/* <CardHeader className="pb-5 pt-6 border-b border-indigo-100/50 bg-gradient-to-r from-purple-100/80 via-indigo-50/90 to-purple-50/80">
                   <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
@@ -546,9 +565,8 @@ export default function Dashboard() {
                       </Button>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="p-5 relative overflow-hidden flex-1 flex flex-col">
-                  {/* Enhanced decorative elements */}
+                </CardHeader> */}
+                {/* <CardContent className="p-5 relative overflow-hidden flex-1 flex flex-col">
                   <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div className="absolute -top-20 -right-20 w-60 h-60 bg-gradient-to-br from-indigo-300/30 to-purple-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }}></div>
                     <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-gradient-to-tr from-purple-300/30 to-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s' }}></div>
@@ -557,21 +575,17 @@ export default function Dashboard() {
                     <div className="absolute bottom-0 right-0 w-full h-40 bg-gradient-to-t from-white/40 to-transparent pointer-events-none"></div>
                   </div>
 
-                  {/* Weekday headers */}
                   <div className="grid grid-cols-7 gap-1 mb-2 text-center">
                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
                       <div key={`${index}_${day}`} className="text-xs font-semibold text-indigo-700 py-2">{day}</div>
                     ))}
                   </div>
 
-                  {/* Calendar grid */}
                   <div className="grid grid-cols-7 gap-1.5 relative z-10 mt-2">
                     {(() => {
-                      // Calculate days to display
                       const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
                       const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
 
-                      // Previous month days
                       const prevMonthDays = [];
                       const prevMonthLastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0).getDate();
                       for (let i = firstDayOfMonth - 1; i >= 0; i--) {
@@ -584,7 +598,6 @@ export default function Dashboard() {
                         );
                       }
 
-                      // Current month days
                       const currentMonthDays = [];
                       const events = {
                         10: { type: 'meeting', color: 'indigo', title: 'Client Meeting' },
@@ -659,10 +672,9 @@ export default function Dashboard() {
                         );
                       }
 
-                      // Next month days
                       const nextMonthDays = [];
                       const totalDaysShown = prevMonthDays.length + currentMonthDays.length;
-                      const nextMonthDaysToShow = 42 - totalDaysShown; // 6 rows of 7 days
+                      const nextMonthDaysToShow = 42 - totalDaysShown;
 
                       for (let day = 1; day <= nextMonthDaysToShow; day++) {
                         nextMonthDays.push(
@@ -677,15 +689,15 @@ export default function Dashboard() {
                       return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
                     })()}
                   </div>
-                </CardContent>
+                </CardContent> */}
                 <CardFooter className="border-t border-indigo-100/50 bg-gradient-to-br from-white/90 to-indigo-50/30 p-5">
                   <div className="space-y-4 w-full">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center">
                         <CalendarIcon className="h-4 w-4 mr-2 text-indigo-500" />
-                        Upcoming Events
+                        Your Upcoming Events & Sessions
                       </h4>
-                      <Button
+                      {sortedUpcomingEvents?.length > 0 && <Button
                         variant="ghost"
                         className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-sm"
                         onClick={() => {
@@ -694,74 +706,71 @@ export default function Dashboard() {
                         }}
                       >
                         View All <ChevronRightIcon className="ml-1 h-4 w-4" />
-                      </Button>
+                      </Button>}
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="group flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-200 border border-indigo-100/30 hover:border-purple-200 bg-white/40 hover:bg-white shadow-sm hover:shadow-md">
-                        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-purple-400 to-indigo-600 group-hover:scale-y-110 transition-transform duration-300"></div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-indigo-700 group-hover:text-indigo-800">Photography Workshop</div>
-                          <div className="text-xs text-gray-500 mt-1 flex items-center">
-                            <CalendarIcon className="h-3 w-3 mr-1.5 text-indigo-400" />
-                            May 15, 2025
+                    {sortedUpcomingEvents?.length > 0 ? <div className="space-y-3 max-h-[80vh] overflow-scroll">
+                      {/* --------------------------------------------------------- */}
+                      {sortedUpcomingEvents?.map((event) => {
+                        const { id } = event;
+                        const name = 'eventName' in event ? event.eventName : event.name;
+                        const date = 'eventDate' in event ? event.eventDate : event.date;
+                        return (<div key={id} className="group flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-200 border border-indigo-100/30 hover:border-purple-200 bg-white/40 hover:bg-white shadow-sm hover:shadow-md">
+                          <div className="w-1 h-12 rounded-full bg-gradient-to-b from-purple-400 to-indigo-600 group-hover:scale-y-110 transition-transform duration-300"></div>
+                          <div className="flex-1">
+                            <div className="text-sm font-semibold text-indigo-700 group-hover:text-indigo-800 truncate">{name}</div>
+                            <div className="text-xs text-gray-500 mt-1 flex items-center">
+                              <CalendarIcon className="h-3 w-3 mr-1.5 text-indigo-400" />
+                              {dayjs(date).format('MMM DD, YYYY')}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-0.5 text-[10px] font-medium">
-                            3 days
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="group flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-200 border border-indigo-100/30 hover:border-indigo-200 bg-white/40 hover:bg-white shadow-sm hover:shadow-md">
-                        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-indigo-400 to-indigo-600 group-hover:scale-y-110 transition-transform duration-300"></div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-indigo-700 group-hover:text-indigo-800">Team Meeting</div>
-                          <div className="text-xs text-gray-500 mt-1 flex items-center">
-                            <CalendarIcon className="h-3 w-3 mr-1.5 text-indigo-400" />
-                            May 18, 2025
+                          <div className="flex flex-col items-end">
+                            <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-0.5 text-[10px] font-medium">
+                              {getDaysRemaining(date)}
+                            </Badge>
                           </div>
+                        </div>);
+                      })}
+                      {/* --------------------------------------------------------- */}
+                    </div> : (
+                      <div className="flex flex-col items-center justify-center py-16 px-4 sm:px-8">
+                        <div className="bg-indigo-50 rounded-full p-6 mb-4">
+                          <svg
+                            className="h-12 w-12 text-indigo-400"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect x="6" y="12" width="36" height="28" rx="4" fill="#c7d2fe" />
+                            <rect x="6" y="12" width="36" height="8" rx="2" fill="#6366f1" />
+                            <rect x="14" y="28" width="20" height="8" rx="2" fill="#a5b4fc" />
+                            <circle cx="38" cy="20" r="4" fill="#6366f1" />
+                            <rect x="34.5" y="18.5" width="7" height="7" rx="3.5" fill="#fff" />
+                            <path d="M38 20v3M38 20h3M38 20h-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" />
+                            <rect x="12" y="4" width="4" height="8" rx="2" fill="#6366f1" />
+                            <rect x="32" y="4" width="4" height="8" rx="2" fill="#6366f1" />
+                          </svg>
                         </div>
-                        <div className="flex flex-col items-end">
-                          <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-0.5 text-[10px] font-medium">
-                            6 days
-                          </Badge>
-                        </div>
+                        <h2 className="text-xl font-semibold text-indigo-900 mb-2 text-center">
+                          No Upcoming Events
+                        </h2>
+                        <p className="text-indigo-600 text-center max-w-md mb-4">
+                          There are currently no upcoming events. Please check back later or explore other sections!
+                        </p>
+                        <button
+                          onClick={() => navigate('/events')}
+                          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2 rounded-full font-medium shadow hover:from-indigo-600 hover:to-purple-600 transition"
+                        >
+                          Join Events
+                        </button>
+                        <button
+                          onClick={() => navigate('/sessions')}
+                          className="mt-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2 rounded-full font-medium shadow hover:from-indigo-600 hover:to-purple-600 transition"
+                        >
+                          Join Sessions
+                        </button>
                       </div>
-
-                      <div className="group flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-200 border border-indigo-100/30 hover:border-purple-200 bg-white/40 hover:bg-white shadow-sm hover:shadow-md">
-                        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-purple-400 to-indigo-600 group-hover:scale-y-110 transition-transform duration-300"></div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-indigo-700 group-hover:text-indigo-800">Editing Session</div>
-                          <div className="text-xs text-gray-500 mt-1 flex items-center">
-                            <CalendarIcon className="h-3 w-3 mr-1.5 text-indigo-400" />
-                            May 22, 2025
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-0.5 text-[10px] font-medium">
-                            10 days
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="group flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-200 border border-rose-100/30 hover:border-rose-200 bg-white/40 hover:bg-white shadow-sm hover:shadow-md">
-                        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-rose-400 to-rose-600 group-hover:scale-y-110 transition-transform duration-300"></div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-rose-700 group-hover:text-rose-800">Project Deadline</div>
-                          <div className="text-xs text-gray-500 mt-1 flex items-center">
-                            <ClockIcon className="h-4 w-4 mr-1.5 text-indigo-400" />
-                            May 25, 2025
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-200 px-2.5 py-0.5 text-[10px] font-medium">
-                            13 days
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </CardFooter>
               </Card>
