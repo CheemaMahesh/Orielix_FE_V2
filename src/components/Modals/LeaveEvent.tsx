@@ -24,7 +24,7 @@ export const LeaveEvent = ({ open, onOpenChange, event }: JoinEventProps) => {
                     duration: 500,
                 })
                 onOpenChange(false);
-                getAllEventsByToken();
+                getAllEventsByToken({ type: undefined });
             }
         } catch (err) {
             console.log("Error during joinEvent:", err);

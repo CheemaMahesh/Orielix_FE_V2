@@ -29,6 +29,8 @@ import defaultProfle from "../Icons/defaultprofile.svg";
 import { eventTypes } from "@/lib/constants";
 import { MainNav } from "./MainNav";
 import { MainSlider } from "./MainSlider";
+import { useProfile } from "@/Api/Profile";
+import { useCallProfileInfo } from "@/hooks/Profile";
 
 // Define the Event type based on the eventData structure
 interface Presenter {
@@ -98,6 +100,8 @@ export default function Events() {
   const [leaveEventModalOpen, setLeaveEventModalOpen] = useState<boolean>(false);
   const isEventLoading = useSelector((state: RootState) => state.eventSlice.loading);
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
+  const [selectedType, setSelectedType] = useState<string | null>("All Categories");
+  const { getAllEventsByToken, } = useCallProfileInfo();
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -131,6 +135,12 @@ export default function Events() {
     }
   }
   const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+
+  const getEventsByTypes = async () => {
+    if (selectedType && selectedType !== "All Categories") {
+      getAllEventsByToken({ type: selectedType });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -259,7 +269,7 @@ export default function Events() {
                       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 relative z-10">
                         {/* Category Dropdown */}
                         <div className="flex-1">
-                          <Select>
+                          <Select onValueChange={setSelectedType} defaultValue="All Categories">
                             <SelectTrigger className="h-12 bg-white/90 border-indigo-100 hover:border-indigo-300 focus:border-indigo-500 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-gray-700 pl-12">
                               <div className="absolute left-3 top-3 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shadow-md">
                                 <SparklesIcon className="w-4 h-4 text-white" />
@@ -282,7 +292,7 @@ export default function Events() {
                         </div>
 
                         {/* Search Button */}
-                        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-6 h-12 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1 hover:scale-[1.03] font-medium whitespace-nowrap w-full md:w-auto">
+                        <Button onClick={getEventsByTypes} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-6 h-12 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1 hover:scale-[1.03] font-medium whitespace-nowrap w-full md:w-auto">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                             <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
                           </svg>

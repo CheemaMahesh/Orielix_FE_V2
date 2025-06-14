@@ -1,6 +1,6 @@
 import { useProfile } from "@/Api/Profile";
 import { toast } from "@/components/ui/use-toast";
-import { addEvents, setEventLoading } from "@/reducers/events";
+import { addEvents, clearEvents, setEventLoading } from "@/reducers/events";
 import { addUser } from "@/reducers/me";
 import { useDispatch } from "react-redux";
 import { addSessions, setSessionLoading } from "@/reducers/sessions";
@@ -50,9 +50,9 @@ export const useCallProfileInfo = () => {
     }
   };
 
-  const getAllEventsByToken = async () => {
+  const getAllEventsByToken = async ({ type }: { type?: string }) => {
     dispatch(setEventLoading(true));
-    const res = await getAllEvents();
+    const res = await getAllEvents({ type });
     if (res) {
       if (res.success) {
         dispatch(addEvents(res.events));
@@ -65,7 +65,6 @@ export const useCallProfileInfo = () => {
     const res = await getRankings();
     if (res) {
       if (res.success) {
-        console.log("res", res.rankings);
         dispatch(addRaanks(res.rankings));
       } else {
         toast({

@@ -24,7 +24,7 @@ export const DeleteEvent = ({ open, onOpenChange, onSuccess, title, id }: JoinEv
             e.preventDefault();
             const res = await deleteEvent(id as string);
             if (res && res.success) {
-                getAllEventsByToken();
+                getAllEventsByToken({ type: undefined });
                 onSuccess?.();
                 toast({
                     title: "Event Deleted",

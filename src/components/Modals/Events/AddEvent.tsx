@@ -98,7 +98,7 @@ export const AddEvent = ({ open, onOpenChange, onSuccess }: JoinEventProps) => {
             await createEvent({
                 payload: currentEvent,
             });
-            getAllEventsByToken();
+            getAllEventsByToken({ type: undefined });
             onSuccess?.();
         } catch (error) {
             console.error("Error creating intrest:", error);

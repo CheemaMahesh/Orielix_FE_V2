@@ -69,7 +69,7 @@ const App = () => {
       getMeByToken();
     }
     if (!eventsLoading && (!events || events.length === 0) && token) {
-      getAllEventsByToken();
+      getAllEventsByToken({ type: undefined });
     }
     if (!sessionLoading && (!sessions || sessions.length === 0) && token) {
       getAllSessionsByToken();

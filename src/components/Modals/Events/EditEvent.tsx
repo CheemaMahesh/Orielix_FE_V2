@@ -95,7 +95,7 @@ export const EditEvent = ({ open, onOpenChange, onSuccess, onEventChange, event 
                 duration,
             }
             await EditEvent(payload);
-            getAllEventsByToken();
+            getAllEventsByToken({ type: undefined });
             onSuccess?.();
         } catch (error) {
             console.error("Error creating intrest:", error);

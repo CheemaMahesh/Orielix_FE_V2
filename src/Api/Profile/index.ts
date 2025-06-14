@@ -115,11 +115,17 @@ export const useProfile = () => {
     }
   };
 
-  const getAllEvents = async (): Promise<EventResponse | null> => {
+  const getAllEvents = async ({
+    type,
+  }: {
+    type?: string;
+  }): Promise<EventResponse | null> => {
     try {
       handleLoading("event", true);
       const response = await axios.get(
-        `${config.apiUrl}/api/v1/user/getallevents`,
+        `${config.apiUrl}/api/v1/user/getallevents${
+          type ? `?eventType=${type}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -28,7 +28,7 @@ export const RegisterEvent = ({ open, onOpenChange, event, onSuccess, isEvent = 
             const res = await joinEvent(event?.id);
             if (res?.success) {
                 onOpenChange(false);
-                getAllEventsByToken();
+                getAllEventsByToken({ type: undefined });
                 onSuccess();
             }
         } catch (err) {
