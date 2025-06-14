@@ -181,17 +181,30 @@ export const useProfile = () => {
     }
   };
 
-  const getAllSessions = async () => {
+  const getAllSessions = async ({
+    category,
+    type,
+  }: {
+    category?: string;
+    type?: string;
+  }) => {
     try {
       handleLoading("session", true);
-      const response = await axios.get(
-        `${config.apiUrl}/api/v1/user/getallsessions`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+
+      // Build query params if present
+      const params = new URLSearchParams();
+      if (category) params.append("category", category);
+      if (type) params.append("type", type);
+
+      const url = `${config.apiUrl}/api/v1/user/getallsessions${
+        params.toString() ? `?${params.toString()}` : ""
+      }`;
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (err) {
       console.log("Error during getAllSessions:", err);

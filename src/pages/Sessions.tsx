@@ -29,6 +29,10 @@ import { useNavigate } from "react-router-dom";
 import defaultProfle from "../Icons/defaultprofile.svg"
 import { MainNav } from "./MainNav";
 import { MainSlider } from "./MainSlider";
+import { sessionCategories, sessionTypes } from "@/lib/constants";
+import { s } from "node_modules/framer-motion/dist/types.d-DDSxwf0n";
+import { useProfile } from "@/Api/Profile";
+import { useCallProfileInfo } from "@/hooks/Profile";
 
 // NavItem component for sidebar
 interface NavItemProps {
@@ -74,6 +78,10 @@ export default function Sessions() {
   const { sessions, loading: isSessionLoading } = useSelector((state: RootState) => state.sessionsSlice);
   const { getHoursByMinutes } = useFunctionDirectory();
 
+  const [selectedCategory, setSelectedCategory] = useState<string | null>("All Categories");
+  const [selectedType, setSelectedType] = useState<string | null>("All Types");
+  const { getAllSessionsByToken } = useCallProfileInfo();
+
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -103,6 +111,13 @@ export default function Sessions() {
   const [selectedSession, setSelectedSession] = useState<SessionType>(null);
   const userInfo = useSelector((state: RootState) => state.userSlice.user);
   const isAdmin = userInfo?.userType ? userInfo.userType === "admin" || userInfo.userType === "superadmin" : false;
+
+  const handleFilterSession = async () => {
+    await getAllSessionsByToken({
+      category: selectedCategory === "All Categories" ? null : selectedCategory,
+      type: selectedType === "All Types" ? null : selectedType,
+    })
+  }
 
 
   return (
@@ -232,7 +247,7 @@ export default function Sessions() {
                       <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 relative z-10">
                         {/* Category Dropdown */}
                         <div className="w-full sm:flex-1">
-                          <Select>
+                          <Select onValueChange={setSelectedCategory} defaultValue={selectedCategory}>
                             <SelectTrigger className="h-12 bg-white/90 border-indigo-100 hover:border-indigo-300 focus:border-indigo-500 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-gray-700 pl-12">
                               <div className="absolute left-3 top-3 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shadow-md">
                                 <LayoutGridIcon className="w-4 h-4 text-white" />
@@ -241,44 +256,14 @@ export default function Sessions() {
                             </SelectTrigger>
                             <SelectContent className="bg-white/95 backdrop-blur-sm border-indigo-100 rounded-xl shadow-xl p-1.5 border-t ">
                               <div className="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 rounded-lg p-2 mb-2">
-                                <SelectItem value="all" className="rounded-lg hover:bg-white flex items-center gap-2 pl-2 h-9 transition-all duration-200">
+                                <SelectItem value="All Categories" className="rounded-lg hover:bg-white flex items-center gap-2 pl-2 h-9 transition-all duration-200">
                                   <span className="text-indigo-600 font-medium">All Categories</span>
                                 </SelectItem>
                               </div>
                               <div className="space-y-1 px-1">
-                                <SelectItem value="orielix-officials" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Orielix Officials</span>
-                                </SelectItem>
-                                <SelectItem value="technology" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Technology</span>
-                                </SelectItem>
-                                <SelectItem value="startup" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Startup</span>
-                                </SelectItem>
-                                <SelectItem value="game-development" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Game Development</span>
-                                </SelectItem>
-                                <SelectItem value="graphic-design" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Graphic Design</span>
-                                </SelectItem>
-                                <SelectItem value="ui-ux" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">UI/UX</span>
-                                </SelectItem>
-                                <SelectItem value="animation" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Animation</span>
-                                </SelectItem>
-                                <SelectItem value="editing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Editing</span>
-                                </SelectItem>
-                                <SelectItem value="content-writing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Content Writing</span>
-                                </SelectItem>
-                                <SelectItem value="marketing" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Marketing</span>
-                                </SelectItem>
-                                <SelectItem value="other" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Other</span>
-                                </SelectItem>
+                                {sessionCategories?.map((category) => (<SelectItem value={category} className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
+                                  <span className="ml-2">{category}</span>
+                                </SelectItem>))}
                               </div>
                             </SelectContent>
                           </Select>
@@ -286,7 +271,7 @@ export default function Sessions() {
 
                         {/* Session Type Dropdown */}
                         <div className="w-full sm:flex-1 relative">
-                          <Select>
+                          <Select onValueChange={setSelectedType} defaultValue={selectedType}>
                             <SelectTrigger className="h-12 bg-white/90 border-purple-300 hover:border-purple-400 focus:border-purple-500 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-gray-700 pl-12">
                               <div className="absolute left-3 top-3 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shadow-md">
                                 <SparklesIcon className="w-4 h-4 text-white" />
@@ -295,27 +280,21 @@ export default function Sessions() {
                             </SelectTrigger>
                             <SelectContent className="bg-white/95 backdrop-blur-sm border-indigo-100 rounded-xl shadow-xl p-1.5 border-t ">
                               <div className="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 rounded-lg p-2 mb-2">
-                                <SelectItem value="all-types" className="rounded-lg hover:bg-white flex items-center gap-2 pl-2 h-9 transition-all duration-200">
+                                <SelectItem value="All Types" className="rounded-lg hover:bg-white flex items-center gap-2 pl-2 h-9 transition-all duration-200">
                                   <span className="text-indigo-600 font-medium">All Types</span>
                                 </SelectItem>
                               </div>
                               <div className="space-y-1 px-1">
-                                <SelectItem value="workshops" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Workshops</span>
-                                </SelectItem>
-                                <SelectItem value="bootcamps" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Bootcamps</span>
-                                </SelectItem>
-                                <SelectItem value="meetups" className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
-                                  <span className="ml-2">Meetups</span>
-                                </SelectItem>
+                                {sessionTypes?.map((type) => (<SelectItem value={type} className="rounded-lg hover:bg-indigo-50/70 flex items-center h-9 transition-all duration-200 text-gray-700">
+                                  <span className="ml-2">{type}</span>
+                                </SelectItem>))}
                               </div>
                             </SelectContent>
                           </Select>
                         </div>
 
                         {/* Search Button */}
-                        <Button className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-6 h-12 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1 hover:scale-[1.03] font-medium whitespace-nowrap">
+                        <Button onClick={handleFilterSession} className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-6 h-12 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1 hover:scale-[1.03] font-medium whitespace-nowrap">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                             <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
                           </svg>

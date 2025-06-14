@@ -91,9 +91,15 @@ export const useCallProfileInfo = () => {
     }
   };
 
-  const getAllSessionsByToken = async () => {
+  const getAllSessionsByToken = async ({
+    category,
+    type,
+  }: {
+    category?: string;
+    type?: string;
+  }) => {
     dispatch(setSessionLoading(true));
-    const res = await getAllSessions();
+    const res = await getAllSessions({ category, type });
     if (res) {
       if (res.success) {
         dispatch(addSessions(res.sessions));
