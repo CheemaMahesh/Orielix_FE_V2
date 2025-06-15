@@ -28,6 +28,7 @@ type ProfileLoading = {
   markNotificationAsRead?: boolean;
   getProfileKeys?: boolean;
   updateImage?: boolean;
+  getOtp?: boolean;
 };
 
 export type MeResponse = {
@@ -87,6 +88,7 @@ export const useProfile = () => {
     markNotificationAsRead: false,
     getProfileKeys: false,
     updateImage: false,
+    getOtp: false,
   });
   const handleLoading = (type: string, value: boolean) => {
     setIsLoading((prevState) => ({
@@ -573,6 +575,19 @@ export const useProfile = () => {
     }
   };
 
+  const getOtp = async (email: string) => {
+    try {
+      const response = await axios.get(
+        `${config.apiUrl}/api/v1/user/getOtp?email=${email}`
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during getOtp:", err);
+    } finally {
+      handleLoading("getOtp", false);
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -597,5 +612,6 @@ export const useProfile = () => {
     markNotificationAsRead,
     getProfileKeys,
     updateImage,
+    getOtp,
   };
 };
