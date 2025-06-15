@@ -89,16 +89,21 @@ export default function Footer() {
                 Subscribe
               </Button>
             </div>
-            <div className="pt-2 cursor-pointer text-gray-400">
-              <a href="https://favcy.com" className="no-underline" target="_blank" rel="noopener noreferrer">
-                Supported by Favcy X BuilderX
-              </a>
-            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-6 md:pt-8 mt-6 md:mt-8 text-center text-gray-400 text-xs md:text-sm">
-          <p>&copy; {currentYear} Orielix. All rights reserved.</p>
+        <div className="border-0 border-t pt-3 border-solid border-gray-800 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between mt-8">
+          <p className="text-center sm:text-left text-sm text-gray-500">
+            &copy; {currentYear} Orielix. All rights reserved.
+          </p>
+          <a
+            href="https://favcy.com"
+            className="no-underline text-center sm:text-right mt-4 sm:mt-0 text-gray-500 font-medium"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Supported by Favcy X BuilderX
+          </a>
         </div>
       </div>
     </footer>
