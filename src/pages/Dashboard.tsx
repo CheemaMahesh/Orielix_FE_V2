@@ -29,6 +29,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MainNav } from "./MainNav";
 import { MainSlider } from "./MainSlider";
+import { Popover } from "antd";
+import React from "react";
 
 
 type InstitutionTopRankersTypeExtended = {
@@ -74,6 +76,19 @@ export default function Dashboard() {
       return new Date(dateA).getTime() - new Date(dateB).getTime();
     }
   );
+
+  // Prepare a map of events by date (YYYY-MM-DD), adjusting for local timezone
+  const eventsByDate = {};
+  sortedUpcomingEvents?.forEach(event => {
+    const rawDate = 'eventDate' in event ? event.eventDate : event.date;
+    if (!rawDate) return;
+    const dateObj = new Date(rawDate);
+    // Adjust for timezone offset to get local date
+    const localDate = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000);
+    const key = localDate.toISOString().split("T")[0];
+    if (!eventsByDate[key]) eventsByDate[key] = [];
+    eventsByDate[key].push(event);
+  });
 
   // -------------------Ranks------------------------
   const ranks = useSelector((state: RootState) => state.ranks);
@@ -246,7 +261,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-[50vh] bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       {/* Sidebar */}
       <MainSlider />
 
@@ -270,7 +285,7 @@ export default function Dashboard() {
                   <div className="absolute w-[400px] h-[400px] -bottom-[200px] -left-[100px] bg-indigo-300/20 rounded-full blur-3xl"></div>
                 </div>
 
-                <CardContent className="p-0 relative z-10 max-h-[80vh]">
+                <CardContent className="p-0 relative z-10 h-full">
                   {/* Welcome Section */}
                   <div className="pt-8 px-8 text-center">
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -415,33 +430,35 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex justify-center items-end h-60 relative gap-4 sm:gap-10 pt-14">
-                      {activeRanks?.map((rank, index) => (
-                        <div key={`${rank.email}_${index}`} className="flex flex-col items-center group">
-                          <div className="relative flex flex-col items-center">
-                            <div
-                              className={`
-                              w-16 sm:w-20 bg-gradient-to-t ${utilRankings?.at(index).color}
-                              hover:shadow-lg 
-                              rounded-t-xl ${utilRankings?.at(index)?.height} shadow-md 
-                              transition-all duration-300 ease-out
-                              group-hover:scale-105 border-t border-indigo-200
-                            `}
-                            >
-                              <div className="absolute -top-6 left-0 right-0 flex justify-center">
-                                <div className="bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
-                                  <span className="text-xs font-semibold text-white">#</span>
-                                  <span className="text-sm font-bold text-white">{rank?.rank}</span>
+                      {activeRanks?.map((rank, index) => {
+                        let barHeight = '50%';
+                        if (index === 0) barHeight = '90%';
+                        else if (index === 1) barHeight = '80%';
+                        return (
+                          <div key={`${rank.email}_${index}`} className="flex flex-col items-center group">
+                            <div className="relative flex flex-col items-center">
+                              <div
+                                className={
+                                  `w-16 sm:w-20 bg-gradient-to-t ${utilRankings?.at(index)?.color} hover:shadow-lg rounded-t-xl shadow-md transition-all duration-300 ease-out group-hover:scale-105 border-t border-indigo-200`
+                                }
+                                style={{ height: barHeight }}
+                              >
+                                <div className="absolute -top-6 left-0 right-0 flex justify-center">
+                                  <div className="bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
+                                    <span className="text-xs font-semibold text-white">#</span>
+                                    <span className="text-sm font-bold text-white">{index + 1}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex flex-col items-center mt-3">
-                            <div className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
-                              <span className="text-xs sm:text-sm font-semibold text-indigo-700">{rank?.name}</span>
+                            <div className="flex flex-col items-center mt-3">
+                              <div className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                                <span className="text-xs sm:text-sm font-semibold text-indigo-700">{rank?.name}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* Simple ranking explanation */}
@@ -517,7 +534,7 @@ export default function Dashboard() {
 
             <div className="space-y-8 flex flex-col h-full">
               <Card className="border-0 shadow-xl bg-gradient-to-b from-purple-50/90 to-indigo-50/90 backdrop-blur-md rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 flex-1 flex flex-col">
-                {/* <CardHeader className="pb-5 pt-6 border-b border-indigo-100/50 bg-gradient-to-r from-purple-100/80 via-indigo-50/90 to-purple-50/80">
+                <CardHeader className="pb-5 pt-6 border-b border-indigo-100/50 bg-gradient-to-r from-purple-100/80 via-indigo-50/90 to-purple-50/80">
                   <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
@@ -565,8 +582,8 @@ export default function Dashboard() {
                       </Button>
                     </div>
                   </div>
-                </CardHeader> */}
-                {/* <CardContent className="p-5 relative overflow-hidden flex-1 flex flex-col">
+                </CardHeader>
+                <CardContent className="p-5 relative overflow-hidden flex-1 flex flex-col">
                   <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div className="absolute -top-20 -right-20 w-60 h-60 bg-gradient-to-br from-indigo-300/30 to-purple-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }}></div>
                     <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-gradient-to-tr from-purple-300/30 to-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s' }}></div>
@@ -599,14 +616,6 @@ export default function Dashboard() {
                       }
 
                       const currentMonthDays = [];
-                      const events = {
-                        10: { type: 'meeting', color: 'indigo', title: 'Client Meeting' },
-                        15: { type: 'workshop', color: 'purple', title: 'Photography Workshop' },
-                        18: { type: 'meeting', color: 'indigo', title: 'Team Meeting' },
-                        22: { type: 'session', color: 'purple', title: 'Editing Session' },
-                        25: { type: 'deadline', color: 'rose', title: 'Project Deadline' }
-                      };
-
                       const isToday = (day) => {
                         return currentMonth.getMonth() === today.getMonth() &&
                           currentMonth.getFullYear() === today.getFullYear() &&
@@ -614,15 +623,18 @@ export default function Dashboard() {
                       };
 
                       for (let day = 1; day <= daysInMonth; day++) {
-                        const hasEvent = events[day];
+                        const dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+                        // Adjust for timezone offset
+                        const localDate = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000);
+                        const dateKey = localDate.toISOString().split("T")[0];
+                        const dayEvents = eventsByDate[dateKey] || [];
                         const dayIsToday = isToday(day);
 
-                        currentMonthDays.push(
+                        const dayCell = (
                           <div
-                            key={day}
                             className={`
                               relative flex flex-col items-center justify-center p-1
-                              ${hasEvent ? `group` : ''}
+                              ${dayEvents.length ? `group` : ''}
                               ${dayIsToday ? 'z-10' : 'z-0'}
                               cursor-pointer transition-all duration-300 hover:scale-105
                             `}
@@ -631,8 +643,8 @@ export default function Dashboard() {
                               w-full aspect-square flex items-center justify-center
                               ${dayIsToday
                                 ? 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-md shadow-indigo-200 rounded-full'
-                                : hasEvent
-                                  ? `bg-${hasEvent.color}-50 hover:bg-${hasEvent.color}-100 rounded-full`
+                                : dayEvents.length
+                                  ? `bg-indigo-50 hover:bg-indigo-100 rounded-full`
                                   : 'hover:bg-indigo-50 rounded-full'}
                               transition-all duration-300 ease-out
                             `}>
@@ -640,35 +652,55 @@ export default function Dashboard() {
                                 text-xs font-semibold
                                 ${dayIsToday
                                   ? 'text-white'
-                                  : hasEvent
-                                    ? `text-${hasEvent.color}-700`
+                                  : dayEvents.length
+                                    ? `text-indigo-700`
                                     : 'text-gray-700'}
                                 transition-all duration-200
                               `}>
                                 {day}
                               </span>
                             </div>
-
-                            {hasEvent && (
+                            {dayEvents.length > 0 && (
                               <div className={`
                                 absolute -bottom-0.5 left-1/2 transform -translate-x-1/2
-                                w-1.5 h-1.5 rounded-full bg-${hasEvent.color}-500
+                                w-1.5 h-1.5 rounded-full bg-indigo-500
                                 group-hover:scale-125 transition-all duration-300
                               `}></div>
                             )}
-
-                            {hasEvent && (
-                              <div className={`
-                                absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full
-                                bg-${hasEvent.color}-100 text-${hasEvent.color}-700 text-[8px] font-medium
-                                px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 group-hover:-translate-y-2
-                                transition-all duration-300 whitespace-nowrap z-20 pointer-events-none
-                                shadow-md border border-${hasEvent.color}-200/50
-                              `}>
-                                {hasEvent.title}
-                              </div>
-                            )}
                           </div>
+                        );
+
+                        currentMonthDays.push(
+                          dayEvents.length > 0 ? (
+                            <Popover
+                              style={{
+                                background: '#000000',
+                                borderRadius: '0.75rem',
+                                padding: '0.75rem 1rem',
+                                color: 'white',
+                              }}
+                              key={day}
+                              content={
+                                <div
+                                >
+                                  {dayEvents
+                                    .filter(ev => ev.title || ev.name || ev.eventName)
+                                    .map((ev, idx) => (
+                                      <div key={ev.id || ev.title} className="mb-1 last:mb-0 flex items-center gap-0.5">
+                                        <div>{idx + 1}.</div>
+                                        <span className="text-sm font-medium break-words">{ev.title || ev.eventName || ev.name || "Untitled Event"}</span>
+                                      </div>
+                                    ))}
+                                </div>
+                              }
+                              placement="top"
+                              overlayClassName="max-w-xs"
+                            >
+                              {dayCell}
+                            </Popover>
+                          ) : (
+                            <React.Fragment key={day}>{dayCell}</React.Fragment>
+                          )
                         );
                       }
 
@@ -689,7 +721,7 @@ export default function Dashboard() {
                       return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
                     })()}
                   </div>
-                </CardContent> */}
+                </CardContent>
                 <CardFooter className="border-t border-indigo-100/50 bg-gradient-to-br from-white/90 to-indigo-50/30 p-5">
                   <div className="space-y-4 w-full">
                     <div className="flex items-center justify-between">
