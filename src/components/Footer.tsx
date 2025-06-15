@@ -5,16 +5,16 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className="bg-gray-900 text-white pt-12 md:pt-20 pb-6 px-4 md:px-12">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-8">
           <div className="text-center sm:text-left -mt-2 md:-mt-4">
             <div className="mb-2 flex justify-center sm:justify-start">
-              <img 
-                src="/lovable-uploads/orielixlogo.png" 
-                alt="Orielix Logo" 
+              <img
+                src="/lovable-uploads/orielixlogo.png"
+                alt="Orielix Logo"
                 className="h-20 sm:h-24 md:h-28 w-auto invert"
               />
             </div>
@@ -22,7 +22,7 @@ export default function Footer() {
               Transforming lives through connections, community and innovations.
             </p>
           </div>
-          
+
           <div className="mt-2 sm:mt-0">
             <h3 className="text-lg font-bold mb-3 md:mb-4 text-center sm:text-left">Social Handles</h3>
             <ul className="space-y-2 md:space-y-3 flex flex-col items-center sm:items-start">
@@ -56,7 +56,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           <div className="mt-2 sm:mt-0">
             <h3 className="text-lg font-bold mb-3 md:mb-4 text-center sm:text-left">Contact</h3>
             <ul className="space-y-2 md:space-y-3 flex flex-col items-center sm:items-start">
@@ -74,24 +74,29 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           <div className="mt-6 sm:mt-0">
             <h3 className="text-lg font-bold mb-3 md:mb-4 text-center sm:text-left">Newsletter</h3>
             <p className="text-gray-300 mb-3 md:mb-4 text-sm md:text-base text-center sm:text-left">
               Subscribe to our newsletter for the latest updates and features.
             </p>
             <div className="flex gap-2 flex-col sm:flex-row">
-              <Input 
-                placeholder="Your email" 
+              <Input
+                placeholder="Your email"
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 text-sm md:text-base h-10 md:h-auto"
               />
               <Button className="bg-purple-600 hover:bg-purple-700 mt-2 sm:mt-0 text-sm md:text-base h-10 md:h-auto">
                 Subscribe
               </Button>
             </div>
+            <div className="pt-2 cursor-pointer text-gray-400">
+              <a href="https://favcy.com" className="no-underline" target="_blank" rel="noopener noreferrer">
+                Supported by Favcy X BuilderX
+              </a>
+            </div>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 pt-6 md:pt-8 mt-6 md:mt-8 text-center text-gray-400 text-xs md:text-sm">
           <p>&copy; {currentYear} Orielix. All rights reserved.</p>
         </div>
