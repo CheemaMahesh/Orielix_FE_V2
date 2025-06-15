@@ -86,7 +86,7 @@ export default function Navbar() {
                 >
                   Home
                 </Link>
-                <Link
+                {/* <Link
                   to="/about"
                   className={`px-5 py-2 rounded-full ${location.pathname === '/about' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-purple-600 transform hover:-translate-y-0.5' : 'text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5'}`}
                 >
@@ -97,10 +97,10 @@ export default function Navbar() {
                   className={`px-5 py-2 rounded-full ${location.pathname === '/team' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-purple-600 transform hover:-translate-y-0.5' : 'text-indigo-700 font-medium text-sm transition-all duration-300 hover:bg-white/80 hover:shadow-sm transform hover:-translate-y-0.5'}`}
                 >
                   Session
-                </Link>
-                {isAdmin && <Link to="/admin" className={`px-5 py-2 rounded-full 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-purple-600 transform hover:-translate-y-0.5`}>
+                </Link> */}
+                {/* {isAdmin && <Link to="/admin" className={`px-5 py-2 rounded-full 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-purple-600 transform hover:-translate-y-0.5`}>
                   Admin Tool
-                </Link>}
+                </Link>} */}
               </div>
             </div>
           </div>
