@@ -247,15 +247,15 @@ export default function Dashboard() {
   const utilRankings = [
     {
       color: "from-purple-500 to-indigo-400",
-      height: " h-52 sm:h-56",
-    },
-    {
-      color: "from-rose-500 to-red-400",
-      height: "	h-24 sm:h-28",
+      height: "h-52 sm:h-56",
     },
     {
       color: "from-emerald-500 to-green-400",
-      height: "	h-24 sm:h-28",
+      height: "h-24 sm:h-28",
+    },
+    {
+      color: "from-rose-500 to-red-400",
+      height: "h-24 sm:h-28",
     },
   ]
 
@@ -431,22 +431,20 @@ export default function Dashboard() {
 
                     <div className="flex justify-center items-end h-60 relative gap-4 sm:gap-10 pt-14">
                       {activeRanks?.map((rank, index) => {
-                        let barHeight = '50%';
-                        if (index === 0) barHeight = '90%';
-                        else if (index === 1) barHeight = '80%';
+                        console.log("rank", rank);
+                        let barHeightClass = 'h-[25vh]';
+                        if (index === 0) barHeightClass = 'h-[45vh]';
+                        else if (index === 1) barHeightClass = 'h-[35vh]';
                         return (
                           <div key={`${rank.email}_${index}`} className="flex flex-col items-center group">
                             <div className="relative flex flex-col items-center">
                               <div
-                                className={
-                                  `w-16 sm:w-20 bg-gradient-to-t ${utilRankings?.at(index)?.color} hover:shadow-lg rounded-t-xl shadow-md transition-all duration-300 ease-out group-hover:scale-105 border-t border-indigo-200`
-                                }
-                                style={{ height: barHeight }}
+                                className={`w-16 sm:w-20 bg-gradient-to-t ${utilRankings?.at(index)?.color} ${barHeightClass} hover:shadow-lg rounded-t-xl shadow-md transition-all duration-300 ease-out group-hover:scale-105 border-t border-indigo-200`}
                               >
                                 <div className="absolute -top-6 left-0 right-0 flex justify-center">
                                   <div className="bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md px-2 sm:px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
                                     <span className="text-xs font-semibold text-white">#</span>
-                                    <span className="text-sm font-bold text-white">{index + 1}</span>
+                                    <span className="text-sm font-bold text-white">{rank?.rank}</span>
                                   </div>
                                 </div>
                               </div>
