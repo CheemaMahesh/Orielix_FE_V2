@@ -586,6 +586,33 @@ export const useProfile = () => {
     }
   };
 
+  const verifyOtp = async (email: string, otp: string) => {
+    try {
+      const response = await axios.post(
+        `${config.apiUrl}/api/v1/user/verifyOtp`,
+        { email, otp }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during verifyOtp:", err);
+    } finally {
+      handleLoading("getOtp", false);
+    }
+  };
+
+  const updatePassword = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(
+        `${config.apiUrl}/api/v1/user/updatepassword`,
+        { email, password }
+      );
+      return response.data;
+    } catch (err) {
+      console.log("Error during updatePassword:", err);
+      return { success: false, message: "Failed to update password" };
+    }
+  };
+
   return {
     isLoading,
     getMe,
@@ -611,5 +638,6 @@ export const useProfile = () => {
     getProfileKeys,
     updateImage,
     getOtp,
+    verifyOtp,
   };
 };
