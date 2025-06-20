@@ -46,7 +46,6 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
 
     const { createSession, isLoading } = useAdminSessions();
     const updateSession = ({ type, value }: { type: string, value: string }) => {
-        console.log("type:", type, "value:", value);
         setCurrentSession((prev) => ({
             ...prev,
             [type]: value
@@ -109,8 +108,6 @@ export const AddSession = ({ open, onOpenChange, onSuccess }: JoinSessionProps) 
     }
 
     const selectedPresenter = filteredUsers.find((user) => user.id.toString() === currentSession.presenterId);
-
-    console.log("Current Session:", currentSession);
 
     return (
         < Dialog.Root open={open} onOpenChange={onOpenChange} >

@@ -89,8 +89,6 @@ export default function Notifications() {
     const { notifications: notificationsdata, loading: isLoading } = useAppSelector((state) => state.notifications);
     const userInfo = useAppSelector((state) => state.userSlice.user);
 
-    console.log("notificationsdata", notificationsdata);
-
     // Notifications data related to sessions and events
     const [notifications, setNotifications] = useState<Notification[]>([
         {

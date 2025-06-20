@@ -21,8 +21,6 @@ export const Events = () => {
         setSelectedEvent(event);
         setOpenDelete(true);
     }
-    console.log("selectedEvent", selectedEvent);
-
     const handleEditEvent = (event: EventType) => {
         setSelectedEvent(event);
         setOpenEdit(true);

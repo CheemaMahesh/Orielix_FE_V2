@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthenticateUser } from "@/Api/Hooks/useAuth";
 import { GoogleLogin } from "@react-oauth/google";
 import { useGoogleAuth } from "@/Api/Profile/useGoogleAuth";
-
+import { message } from "antd";
 
 type RegisterValues = {
   username: string;
@@ -37,31 +37,23 @@ const Register = () => {
     e.preventDefault();
     try {
       if (registerValues.password !== registerValues.confirmPassword) {
-        toast({
-          title: "Passwords do not match",
-          variant: "destructive",
-        });
+        message.error("Passwords do not match");
         return;
       }
       if (registerValues.username.length < 3) {
-        toast({
-          title: "Username must be at least 3 characters",
-          variant: "destructive",
-        });
+        message.error("Username must be at least 3 characters");
         return;
       }
-      if (registerValues.password.length < 6) {
-        toast({
-          title: "Password must be at least 6 characters",
-          variant: "destructive",
-        });
+      if (registerValues.password.length < 8) {
+        message.error("Password must be at least 8 characters");
         return;
       }
-      if (registerValues.email.length < 4 || !registerValues.email.includes("@") || !registerValues.email.includes(".")) {
-        toast({
-          title: "Incorrect email format",
-          variant: "destructive",
-        });
+      if (
+        registerValues.email.length < 4 ||
+        !registerValues.email.includes("@") ||
+        !registerValues.email.includes(".")
+      ) {
+        message.error("Incorrect email format");
         return;
       }
 
@@ -71,29 +63,18 @@ const Register = () => {
         username: registerValues.username,
       });
       if (res?.success) {
-        toast({
-          title: "Registration successful",
-          description: "You can now log in to your account.",
-          variant: "default",
-        });
+        message.success("Registration successful. You can now log in to your account.");
         localStorage.setItem("token", res.token);
-        navigate("/dashboard");
+        window.location.replace("/dashboard");
       } else {
-        toast({
-          title: "Registration failed",
-          description: res?.message || "An error occurred. Please try again.",
-          variant: "destructive",
-        });
+        message.error(res?.message || "Registration failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      toast({
-        title: "Error",
-        description: "An error occurred while registering. Please try again.",
-        variant: "destructive",
-      });
+      message.error("An error occurred while registering. Please try again.");
     }
   };
+
 
   const handleValueChange = ({ type, value }: { type: string; value: string }) => {
     setRegisterValues((prevState) => ({
@@ -101,9 +82,6 @@ const Register = () => {
       [type]: value,
     }));
   }
-
-  const handleGoogleRegister = () => {
-  };
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white overflow-hidden">

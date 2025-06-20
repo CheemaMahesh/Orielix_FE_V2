@@ -24,7 +24,6 @@ export const EditSession = ({ open, onOpenChange, onSuccess, currentSession, set
     const { user: users } = useSelector((state: RootState) => state.allUserSlice);
 
     const { editSession, isLoading } = useAdminSessions();
-    console.log("currentSession", currentSession);
     const updateSession = ({ type, value }: { type: string, value: string }) => {
         setCurrentSession({
             ...currentSession,

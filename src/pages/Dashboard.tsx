@@ -431,7 +431,6 @@ export default function Dashboard() {
 
                     <div className="flex justify-center items-end h-60 relative gap-4 sm:gap-10 pt-14">
                       {activeRanks?.map((rank, index) => {
-                        console.log("rank", rank);
                         let barHeightClass = 'h-[25vh]';
                         if (index === 0) barHeightClass = 'h-[45vh]';
                         else if (index === 1) barHeightClass = 'h-[35vh]';

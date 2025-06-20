@@ -21,6 +21,7 @@ export type LoginResponse = {
     username?: string;
     email?: string;
   };
+  status?: number;
 };
 
 export type authenticateUserLoading = {
@@ -54,10 +55,11 @@ export const useAuthenticateUser = () => {
         `${config.apiUrl}/api/v1/user/login`,
         payload
       );
-      handleLoading("isLoginLoading", false);
       return response.data;
     } catch (error) {
       console.error("Error during login:", error);
+    } finally {
+      handleLoading("isLoginLoading", false);
     }
   };
 

@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { message } from "antd";
 
 
 type LoginTypes = {
@@ -35,24 +36,33 @@ const Login = () => {
 
   const handleLoginWithAPI = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation: Password length
+    if (!userData.password || userData.password.length < 8 || userData.password.length > 40) {
+      message.error("Password must be between 8 and 40 characters.");
+      return;
+    }
+
+    // Validation: Email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!userData.email || !emailRegex.test(userData.email)) {
+      message.error("Please enter a valid email address.");
+      return;
+    }
+
     try {
       const res: LoginResponse = await login({ email: userData.email, password: userData.password });
       if (res.success) {
-        toast({
-          title: "Login successful!",
-          description: `Welcome back, ${res.user?.username}!`,
-          variant: "default",
-        });
+        message.success(`Welcome back, ${res.user?.username}!`);
         localStorage.setItem("token", res.token);
         window.location.replace("/dashboard");
+      } else {
+        message.error(res?.message || "Login failed. Please try again.");
       }
     } catch (err) {
-      toast({
-        title: "Login Failed!",
-        variant: "destructive",
-      });
+      message.error("Login Failed! Please try again.");
     }
-  }
+  };
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white overflow-hidden">

@@ -95,8 +95,6 @@ export default function Notifications() {
     }
   }
 
-  console.log("notificationsdata", notificationsdata);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       {/* Sidebar */}

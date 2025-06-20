@@ -112,7 +112,6 @@ export const useProfile = () => {
       return response.data;
     } catch (error) {
       handleLoading("me", false);
-      console.log("Error during getMe:", error);
       return null;
     }
   };
@@ -138,7 +137,6 @@ export const useProfile = () => {
       return response.data;
     } catch (err) {
       handleLoading("event", false);
-      console.log("Error during getAllEvents:", err);
     }
   };
 
@@ -158,7 +156,6 @@ export const useProfile = () => {
       return response.data;
     } catch (err) {
       handleLoading("joinevent", false);
-      console.log("Error during joinEvent:", err);
       return { success: false, message: "Failed to join event" };
     }
   };
@@ -178,8 +175,9 @@ export const useProfile = () => {
       handleLoading("leaveEvent", false);
       return response.data;
     } catch (err) {
-      handleLoading("leaveEvent", false);
       console.log("Error during leaveEvent:", err);
+    } finally {
+      handleLoading("leaveEvent", false);
     }
   };
 
