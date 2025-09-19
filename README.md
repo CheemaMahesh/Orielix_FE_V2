@@ -1,4 +1,4 @@
-# Orielix_FE_V2
+# Orielix
 <a href="https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard" target="_blank">Live Link</a> https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard
 
 ![image](https://github.com/user-attachments/assets/762ccc48-44c7-4562-99a9-3b42117415bc)
