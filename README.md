@@ -7,6 +7,7 @@
   <li>Tailwind</li>
   <li>Redux</li>
   <li>Axios</li>
+  <li>TypeScript</li>
 </ul>
 
 ![image](https://github.com/user-attachments/assets/762ccc48-44c7-4562-99a9-3b42117415bc)
