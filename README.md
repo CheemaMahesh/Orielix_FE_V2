@@ -2,13 +2,12 @@
 <a href="https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard" target="_blank">Live Link</a> https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard
 
 <h1>Tech used</h1>
-<ul>
+<ol>
   <li>React</li>
   <li>Tailwind</li>
   <li>Redux</li>
   <li>Axios</li
-  <li>TypeScript</li>
-</ul>
+</ol>
 
 ![image](https://github.com/user-attachments/assets/762ccc48-44c7-4562-99a9-3b42117415bc)
 ![image](https://github.com/user-attachments/assets/bf5a320d-494c-4023-b354-b5df310ca824)
