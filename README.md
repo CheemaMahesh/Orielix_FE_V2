@@ -1,5 +1,5 @@
 # Orielix
-<a href="https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard" target="_blank">Live Link</a> https://master.d3fsnrjxy8j43j.amplifyapp.com/dashboard
+<a href="https://orielix.com" target="_blank">Live Link</a>
 
 <h1>Tech used</h1>
 <ol>
